@@ -946,14 +946,20 @@
         
         function loadLayout() {
             const saved = localStorage.getItem('tianyuan-layout');
-            if (saved) {
+            // 检查版本，强制更新地栏
+            const VERSION = '2026-04-24-v2';
+            const savedVersion = localStorage.getItem('tianyuan-version');
+            
+            if (saved && savedVersion === VERSION) {
                 try {
                     modules = JSON.parse(saved);
                 } catch (e) {
                     modules = JSON.parse(JSON.stringify(defaultModules));
                 }
             } else {
+                // 版本不匹配，使用默认布局
                 modules = JSON.parse(JSON.stringify(defaultModules));
+                localStorage.setItem('tianyuan-version', VERSION);
             }
         }
         
