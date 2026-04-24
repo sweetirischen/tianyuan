@@ -7,11 +7,13 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Microsoft YaHei', sans-serif;
+            font-family: 'Microsoft YaHei', 'Consolas', sans-serif;
             background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #0f0f23 100%);
             min-height: 100vh;
             color: #e0e0e0;
         }
+        
+        /* 登录界面 */
         .login-container {
             display: flex;
             justify-content: center;
@@ -49,204 +51,317 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
         }
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
-        }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3); }
         .error-msg { color: #ff6b6b; margin-top: 15px; display: none; }
-        .private-content { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; }
-        .private-content.visible { display: block; }
+        .private-content { display: none; height: 100vh; flex-direction: column; }
+        .private-content.visible { display: flex; }
         .login-container.hidden { display: none; }
         
-        /* Header */
-        .header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-            margin-bottom: 30px;
+        /* 顶部栏 */
+        .top-bar {
+            height: 50px;
+            background: rgba(20, 20, 30, 0.95);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
         }
-        .header h1 { color: #ffd700; font-size: 32px; margin-bottom: 5px; }
-        .header .subtitle { color: #888; font-size: 14px; }
-        .header .update-time { color: #4ade80; font-size: 12px; margin-top: 5px; }
-        
-        /* Grid Layout */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        @media (max-width: 900px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
-        
-        /* Section */
-        .section {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .section h2 {
-            color: #ffd700;
-            font-size: 18px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
-            padding-bottom: 8px;
+        .top-bar h1 { color: #c9a227; font-size: 18px; }
+        .top-bar-info { display: flex; align-items: center; gap: 20px; font-size: 12px; color: #888; }
+        .top-bar-info span { color: #c9a227; }
+        .logout-btn {
+            padding: 6px 15px;
+            background: transparent;
+            border: 1px solid rgba(201, 162, 39, 0.5);
+            border-radius: 4px;
+            color: #c9a227;
+            cursor: pointer;
+            font-size: 12px;
         }
         
-        /* 五脏六腑 */
-        .organ-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-        @media (max-width: 600px) { .organ-grid { grid-template-columns: repeat(3, 1fr); } }
-        .organ-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-        }
-        .organ-card h3 { color: #ffd700; font-size: 20px; margin-bottom: 5px; }
-        .organ-card .role { color: #888; font-size: 11px; margin-bottom: 8px; }
-        .organ-card .qi-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-        .organ-card .qi-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4ade80, #ffd700);
-            transition: width 0.5s;
-        }
-        .organ-card .status { font-size: 12px; margin-top: 5px; }
-        .organ-card .status.active { color: #4ade80; }
-        .organ-card .status.inactive { color: #f87171; }
+        /* 主内容 */
+        .main-content { flex: 1; display: flex; overflow: hidden; }
         
-        /* 六腑 */
-        .fu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .fu-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
+        /* 左侧面板 */
+        .left-panel {
+            width: 50%;
+            border-right: 1px solid rgba(201, 162, 39, 0.2);
+            display: flex;
+            flex-direction: column;
         }
-        .fu-card h4 { color: #ffd700; font-size: 16px; }
-        .fu-card .role { color: #888; font-size: 11px; }
-        .fu-card .status { font-size: 12px; margin-top: 5px; }
-        .fu-card .status.active { color: #4ade80; }
         
-        /* 经络 */
-        .meridian-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .meridian-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 12px;
+        /* 右侧面板 */
+        .right-panel {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            padding: 10px 15px;
+            background: rgba(20, 20, 30, 0.8);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .meridian-card .name { color: #ffd700; font-size: 16px; }
-        .meridian-card .function { color: #888; font-size: 12px; }
-        .meridian-card .status { font-size: 12px; }
-        .meridian-card .status.flowing { color: #4ade80; }
+        .panel-header h2 { color: #c9a227; font-size: 14px; }
+        .panel-header .info { font-size: 11px; color: #888; }
         
-        /* 任务 */
-        .task-item {
+        /* Tab切换 */
+        .tab-bar {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 15, 25, 0.9);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.1);
         }
-        .task-item:last-child { border-bottom: none; }
-        .task-name { font-size: 14px; }
-        .task-schedule { color: #888; font-size: 12px; }
-        .task-status { font-size: 12px; padding: 3px 8px; border-radius: 4px; }
-        .task-status.running { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
-        .task-status.pending { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
-        .task-status.error { background: rgba(248, 113, 113, 0.2); color: #f87171; }
-        
-        /* 记忆 */
-        .memory-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .memory-stat {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 15px;
+        .tab-item {
+            flex: 1;
+            padding: 10px;
             text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            color: #888;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
         }
-        .memory-stat .value { color: #ffd700; font-size: 28px; font-weight: bold; }
-        .memory-stat .label { color: #888; font-size: 12px; margin-top: 5px; }
+        .tab-item:hover { color: #c9a227; }
+        .tab-item.active { color: #c9a227; border-bottom-color: #c9a227; }
         
-        /* 日志 */
-        .log-entry {
-            padding: 8px 0;
-            font-family: monospace;
+        /* 代码编辑器 */
+        .code-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        .code-textarea {
+            flex: 1;
+            width: 100%;
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-family: 'Consolas', 'Monaco', monospace;
             font-size: 13px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            line-height: 1.5;
+            padding: 15px;
+            resize: none;
+        }
+        .code-textarea:focus { outline: none; border-color: #c9a227; }
+        
+        .editor-toolbar {
             display: flex;
             gap: 10px;
+            margin-top: 10px;
         }
-        .log-entry:last-child { border-bottom: none; }
-        .log-time { color: #888; min-width: 140px; }
-        .log-event { flex: 1; }
-        .log-entry.success .log-event { color: #4ade80; }
-        .log-entry.info .log-event { color: #60a5fa; }
-        .log-entry.warning .log-event { color: #fbbf24; }
-        .log-entry.error .log-event { color: #f87171; }
-        
-        /* 按钮 */
-        .logout-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 8px;
-            color: #ffd700;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 100;
-        }
-        .logout-btn:hover { background: rgba(255, 215, 0, 0.2); }
-        
-        .action-btn {
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
+        .run-btn {
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
             border: none;
-            border-radius: 8px;
-            color: #1a1a2e;
+            border-radius: 6px;
+            color: #0a0a0a;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .run-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(74, 222, 128, 0.3); }
+        .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .clear-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid #666;
+            border-radius: 6px;
+            color: #888;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .clear-btn:hover { border-color: #c9a227; color: #c9a227; }
+        
+        /* 输出区域 */
+        .output-area {
+            height: 200px;
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid #333;
+            border-radius: 6px;
+            margin-top: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+        }
+        .output-area .stdout { color: #4ade80; white-space: pre-wrap; }
+        .output-area .stderr { color: #f87171; white-space: pre-wrap; }
+        .output-area .info { color: #60a5fa; }
+        .output-area .error { color: #f87171; }
+        
+        /* DuMate任务输入 */
+        .task-input-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        .task-textarea {
+            flex: 1;
+            width: 100%;
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 14px;
+            padding: 15px;
+            resize: none;
+        }
+        .task-textarea:focus { outline: none; border-color: #c9a227; }
+        
+        .task-btn {
+            margin-top: 10px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #c9a227, #8b6914);
+            border: none;
+            border-radius: 6px;
+            color: #0a0a0a;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
-            margin: 5px;
         }
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        .task-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(201, 162, 39, 0.3); }
+        
+        /* 文件浏览器 */
+        .file-browser {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .file-path {
+            padding: 10px;
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid #333;
+            border-radius: 6px;
+            margin: 10px;
+            color: #c9a227;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+        }
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 10px 10px;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(30, 30, 40, 0.5);
+            border: 1px solid #333;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .file-item:hover { background: rgba(201, 162, 39, 0.1); border-color: #c9a227; }
+        .file-item.selected { background: rgba(201, 162, 39, 0.2); border-color: #c9a227; }
+        .file-item .icon { margin-right: 10px; font-size: 16px; }
+        .file-item .name { flex: 1; font-size: 13px; }
+        .file-item .size { color: #888; font-size: 11px; margin-right: 15px; }
+        .file-item .modified { color: #666; font-size: 10px; }
+        
+        /* 智能体编辑器 */
+        .agent-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         
-        /* LLM状态 */
-        .llm-status {
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 8px;
-            padding: 15px;
+        /* 时间轴 */
+        .timeline-bar {
+            display: flex;
+            background: rgba(15, 15, 25, 0.9);
+            padding: 5px;
+            gap: 2px;
+        }
+        .time-item {
+            flex: 1;
+            padding: 6px 3px;
             text-align: center;
-            margin-top: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
         }
-        .llm-status .label { color: #fbbf24; }
-        .llm-status.connected {
-            background: rgba(74, 222, 128, 0.1);
-            border-color: rgba(74, 222, 128, 0.3);
+        .time-item:hover { background: rgba(201, 162, 39, 0.1); }
+        .time-item.active { background: rgba(201, 162, 39, 0.2); color: #c9a227; }
+        .time-item .num { font-size: 14px; font-weight: bold; }
+        
+        /* 九宫 */
+        .jiugong-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
         }
-        .llm-status.connected .label { color: #4ade80; }
+        .jiugong {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 5px;
+            width: 250px;
+            height: 250px;
+        }
+        .gong {
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #444;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .gong:hover { background: rgba(201, 162, 39, 0.15); border-color: #c9a227; }
+        .gong.selected { background: rgba(201, 162, 39, 0.25); border-color: #c9a227; }
+        .gong .num { font-size: 18px; font-weight: bold; color: #c9a227; }
+        .gong .name { font-size: 11px; margin-top: 2px; }
+        
+        /* 状态栏 */
+        .status-bar {
+            height: 25px;
+            background: rgba(15, 15, 25, 0.95);
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 11px;
+            color: #666;
+        }
+        .status-bar span { margin-right: 20px; }
+        .status-bar .highlight { color: #c9a227; }
+        .status-bar .green { color: #4ade80; }
+        .status-bar .red { color: #f87171; }
+        
+        /* 连接状态 */
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f87171;
+        }
+        .status-dot.connected { background: #4ade80; }
     </style>
 </head>
 <body>
+    <!-- 登录界面 -->
     <div class="login-container" id="loginContainer">
         <div class="login-box">
             <h1>🔐 私有空间</h1>
@@ -257,76 +372,418 @@
         </div>
     </div>
 
+    <!-- 主界面 -->
     <div class="private-content" id="privateContent">
-        <button class="logout-btn" id="logoutBtn">退出</button>
-
-        <div class="header">
+        <!-- 顶部栏 -->
+        <div class="top-bar">
             <h1>🏛️ 帝君私有空间</h1>
-            <div class="subtitle">阿垣元灵: <span id="yuanling">0xADY0X9-C0NST4NT</span></div>
-            <div class="update-time">最后更新: <span id="lastUpdate">加载中...</span></div>
+            <div class="top-bar-info">
+                <div class="connection-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="connectionText">未连接</span>
+                </div>
+                <span>CPU: <span id="cpuUsage">-</span>%</span>
+                <span>内存: <span id="memUsage">-</span>%</span>
+                <button class="logout-btn" id="logoutBtn">退出</button>
+            </div>
         </div>
 
-        <div class="main-grid">
-            <!-- 左侧：身国 -->
-            <div>
-                <!-- 五脏 -->
-                <div class="section">
-                    <h2>❤️ 五脏（天垣·法则层）</h2>
-                    <div class="organ-grid" id="zangGrid">加载中...</div>
+        <!-- 主内容 -->
+        <div class="main-content">
+            <!-- 左侧：代码执行 + DuMate -->
+            <div class="left-panel">
+                <div class="tab-bar">
+                    <div class="tab-item active" data-tab="code" onclick="switchTab('code')">📝 代码执行</div>
+                    <div class="tab-item" data-tab="dumate" onclick="switchTab('dumate')">🤖 DuMate任务</div>
                 </div>
                 
-                <!-- 六腑 -->
-                <div class="section">
-                    <h2>🫁 六腑（地垣·运作层）</h2>
-                    <div class="fu-grid" id="fuGrid">加载中...</div>
-                </div>
-                
-                <!-- 经络 -->
-                <div class="section">
-                    <h2>🌀 奇经八脉</h2>
-                    <div class="meridian-grid" id="meridianGrid">加载中...</div>
-                </div>
-            </div>
-            
-            <!-- 右侧：任务和记忆 -->
-            <div>
-                <!-- 记忆系统 -->
-                <div class="section">
-                    <h2>🧠 记忆系统</h2>
-                    <div class="memory-stats" id="memoryStats">加载中...</div>
-                    <div class="llm-status" id="llmStatus">
-                        <span class="label">LLM推理: 待接入</span>
+                <!-- 代码执行 -->
+                <div class="code-editor" id="codeTab">
+                    <textarea class="code-textarea" id="codeInput" placeholder="# 在这里粘贴Python代码
+# 例如：
+print('Hello, 帝君!')
+
+import matplotlib.pyplot as plt
+plt.plot([1,2,3,4,5])
+plt.title('测试图表')
+plt.savefig('test.png')
+print('图表已保存')
+"></textarea>
+                    <div class="editor-toolbar">
+                        <button class="run-btn" id="runBtn" onclick="runCode()">▶ 运行代码</button>
+                        <button class="clear-btn" onclick="clearOutput()">清空输出</button>
+                        <button class="clear-btn" onclick="loadExample()">加载示例</button>
+                    </div>
+                    <div class="output-area" id="outputArea">
+                        <div class="info">输出将显示在这里...</div>
                     </div>
                 </div>
                 
-                <!-- 自动化任务 -->
-                <div class="section">
-                    <h2>⚡ 自动化任务</h2>
-                    <div id="taskList">加载中...</div>
+                <!-- DuMate任务 -->
+                <div class="task-input-area" id="dumateTab" style="display:none;">
+                    <textarea class="task-textarea" id="taskInput" placeholder="输入任务描述，例如：
+
+帮我分析桌面上的data.csv文件，生成统计图表
+
+检查百家号发布池，发布待发布文章
+
+整理紫微帝国文件夹，按类型分类
+
+生成一篇关于AI时代的教育文章"></textarea>
+                    <button class="task-btn" onclick="sendTask()">📤 发送给DuMate</button>
+                    <div class="output-area" id="taskOutput" style="margin-top:10px;">
+                        <div class="info">DuMate响应将显示在这里...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：文件浏览器 + 智能体 -->
+            <div class="right-panel">
+                <div class="tab-bar">
+                    <div class="tab-item active" data-tab="files" onclick="switchRightTab('files')">📁 文件浏览器</div>
+                    <div class="tab-item" data-tab="agents" onclick="switchRightTab('agents')">🤖 智能体</div>
                 </div>
                 
-                <!-- 快捷操作 -->
-                <div class="section">
-                    <h2>🎯 快捷操作</h2>
-                    <div>
-                        <button class="action-btn" id="btnEditor" onclick="window.location.href='editor-v3.html'" style="background: linear-gradient(135deg, #c9a227, #8b6914);">🛠️ 智能体编辑器</button>
-                        <button class="action-btn" id="btnCheckin">百家号签到</button>
-                        <button class="action-btn" id="btnQichi">检查炁池</button>
-                        <button class="action-btn" id="btnBackup">帝国备份</button>
-                        <button class="action-btn" id="btnBaijiahao">打开百家号</button>
+                <!-- 文件浏览器 -->
+                <div class="file-browser" id="filesTab">
+                    <div class="file-path" id="currentPath">C:\Users\Administrator</div>
+                    <div class="file-list" id="fileList">
+                        <div class="info" style="padding:20px;text-align:center;color:#666;">加载中...</div>
+                    </div>
+                </div>
+                
+                <!-- 智能体 -->
+                <div class="agent-editor" id="agentsTab" style="display:none;">
+                    <div class="timeline-bar" id="timelineBar"></div>
+                    <div class="jiugong-area">
+                        <div class="jiugong" id="jiugong"></div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- 日志 -->
-        <div class="section">
-            <h2>📋 最近日志</h2>
-            <div id="logList">加载中...</div>
+
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span>服务地址: <span class="highlight" id="serverUrl">-</span></span>
+            <span>执行时间: <span class="highlight" id="execTime">-</span></span>
+            <span style="margin-left:auto;">宇宙平衡数: 15</span>
         </div>
     </div>
 
-    <script src="private.js"></script>
-    <script src="status-render.js"></script>
+    <script>
+        // ========== 配置 ==========
+        const CONFIG = {
+            authKey: 'ADY0X9',
+            serverUrl: localStorage.getItem('tianyuan-server') || 'http://localhost:5000',
+            workspace: 'C:\\Users\\Administrator'
+        };
+        
+        // ========== 登录 ==========
+        document.getElementById('loginBtn').onclick = login;
+        document.getElementById('passwordInput').onkeypress = e => { if(e.key==='Enter') login(); };
+        document.getElementById('logoutBtn').onclick = logout;
+        
+        function login() {
+            const pwd = document.getElementById('passwordInput').value;
+            if (pwd === CONFIG.authKey) {
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('privateContent').classList.add('visible');
+                initApp();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+        function logout() {
+            document.getElementById('privateContent').classList.remove('visible');
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+        
+        // ========== 初始化 ==========
+        function initApp() {
+            document.getElementById('serverUrl').textContent = CONFIG.serverUrl;
+            checkConnection();
+            loadFiles(CONFIG.workspace);
+            renderTimeline();
+            renderJiugong();
+            setInterval(checkConnection, 30000);
+        }
+        
+        // ========== 连接检测 ==========
+        async function checkConnection() {
+            try {
+                const res = await fetch(`${CONFIG.serverUrl}/api/status`, {
+                    headers: { 'X-Auth-Key': CONFIG.authKey }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('statusDot').classList.add('connected');
+                    document.getElementById('connectionText').textContent = '已连接';
+                    document.getElementById('cpuUsage').textContent = data.cpu;
+                    document.getElementById('memUsage').textContent = data.memory;
+                } else {
+                    throw new Error();
+                }
+            } catch(e) {
+                document.getElementById('statusDot').classList.remove('connected');
+                document.getElementById('connectionText').textContent = '未连接';
+            }
+        }
+        
+        // ========== Tab切换 ==========
+        function switchTab(tab) {
+            document.querySelectorAll('.left-panel .tab-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.tab === tab);
+            });
+            document.getElementById('codeTab').style.display = tab === 'code' ? 'flex' : 'none';
+            document.getElementById('dumateTab').style.display = tab === 'dumate' ? 'flex' : 'none';
+        }
+        
+        function switchRightTab(tab) {
+            document.querySelectorAll('.right-panel .tab-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.tab === tab);
+            });
+            document.getElementById('filesTab').style.display = tab === 'files' ? 'flex' : 'none';
+            document.getElementById('agentsTab').style.display = tab === 'agents' ? 'flex' : 'none';
+        }
+        
+        // ========== 代码执行 ==========
+        async function runCode() {
+            const code = document.getElementById('codeInput').value;
+            if (!code.trim()) {
+                alert('请输入代码');
+                return;
+            }
+            
+            const btn = document.getElementById('runBtn');
+            btn.disabled = true;
+            btn.textContent = '运行中...';
+            
+            const output = document.getElementById('outputArea');
+            output.innerHTML = '<div class="info">正在执行...</div>';
+            
+            try {
+                const res = await fetch(`${CONFIG.serverUrl}/api/run`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Auth-Key': CONFIG.authKey
+                    },
+                    body: JSON.stringify({ code })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    output.innerHTML = `
+                        <div class="info">✓ 执行成功 (${data.elapsed}秒)</div>
+                        <div class="stdout">${escapeHtml(data.stdout) || '(无输出)'}</div>
+                    `;
+                } else {
+                    output.innerHTML = `
+                        <div class="error">✗ 执行失败</div>
+                        <div class="stderr">${escapeHtml(data.stderr)}</div>
+                    `;
+                }
+                
+                document.getElementById('execTime').textContent = data.elapsed + 's';
+                
+            } catch(e) {
+                output.innerHTML = `<div class="error">连接失败: ${e.message}</div>`;
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '▶ 运行代码';
+        }
+        
+        function clearOutput() {
+            document.getElementById('outputArea').innerHTML = '<div class="info">输出已清空</div>';
+        }
+        
+        function loadExample() {
+            document.getElementById('codeInput').value = `# 示例：生成图表
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, 'b-', linewidth=2)
+plt.title('正弦波')
+plt.xlabel('x')
+plt.ylabel('sin(x)')
+plt.grid(True)
+plt.savefig('sin_wave.png', dpi=100)
+print('图表已保存到 sin_wave.png')
+`;
+        }
+        
+        // ========== DuMate任务 ==========
+        async function sendTask() {
+            const task = document.getElementById('taskInput').value;
+            if (!task.trim()) {
+                alert('请输入任务');
+                return;
+            }
+            
+            const output = document.getElementById('taskOutput');
+            output.innerHTML = '<div class="info">正在发送任务给DuMate...</div>';
+            
+            try {
+                const res = await fetch(`${CONFIG.serverUrl}/api/dumate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Auth-Key': CONFIG.authKey
+                    },
+                    body: JSON.stringify({ task })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    output.innerHTML = `
+                        <div class="info">✓ 任务已发送</div>
+                        <div class="stdout">${escapeHtml(data.output || data.message)}</div>
+                    `;
+                } else {
+                    output.innerHTML = `<div class="error">${data.error}</div>`;
+                }
+                
+            } catch(e) {
+                output.innerHTML = `<div class="error">连接失败: ${e.message}</div>`;
+            }
+        }
+        
+        // ========== 文件浏览 ==========
+        async function loadFiles(path) {
+            const list = document.getElementById('fileList');
+            list.innerHTML = '<div class="info" style="padding:20px;text-align:center;">加载中...</div>';
+            
+            try {
+                const res = await fetch(`${CONFIG.serverUrl}/api/files/list`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Auth-Key': CONFIG.authKey
+                    },
+                    body: JSON.stringify({ path })
+                });
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    list.innerHTML = `<div class="error">${data.error}</div>`;
+                    return;
+                }
+                
+                document.getElementById('currentPath').textContent = data.path;
+                
+                let html = '';
+                
+                // 返回上级
+                if (data.parent) {
+                    html += `<div class="file-item" onclick="loadFiles('${escapeAttr(data.parent)}')">
+                        <span class="icon">📁</span>
+                        <span class="name">..</span>
+                    </div>`;
+                }
+                
+                // 文件列表
+                data.items.forEach(item => {
+                    const icon = item.type === 'directory' ? '📁' : '📄';
+                    const size = item.type === 'file' ? formatSize(item.size) : '';
+                    html += `<div class="file-item" onclick="${item.type === 'directory' ? `loadFiles('${escapeAttr(item.path)}')` : `readFile('${escapeAttr(item.path)}')`}">
+                        <span class="icon">${icon}</span>
+                        <span class="name">${item.name}</span>
+                        <span class="size">${size}</span>
+                        <span class="modified">${item.modified.slice(0,10)}</span>
+                    </div>`;
+                });
+                
+                list.innerHTML = html || '<div class="info" style="padding:20px;text-align:center;">空目录</div>';
+                
+            } catch(e) {
+                list.innerHTML = `<div class="error">连接失败: ${e.message}</div>`;
+            }
+        }
+        
+        async function readFile(path) {
+            try {
+                const res = await fetch(`${CONFIG.serverUrl}/api/files/read`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Auth-Key': CONFIG.authKey
+                    },
+                    body: JSON.stringify({ path })
+                });
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                // 显示在代码编辑器
+                document.getElementById('codeInput').value = data.content;
+                switchTab('code');
+                
+            } catch(e) {
+                alert('读取失败: ' + e.message);
+            }
+        }
+        
+        // ========== 智能体 ==========
+        const timeNames = {0:'混沌',1:'起源',2:'承载',3:'生发',4:'运化',5:'核心',6:'收敛',7:'显现',8:'存储',9:'升华'};
+        const luoshuOrder = [4,9,2,3,5,7,8,1,6];
+        const palaceNames = {1:'坎',2:'坤',3:'震',4:'巽',5:'中',6:'乾',7:'兑',8:'艮',9:'离'};
+        
+        let currentTime = 0;
+        let currentPalace = 5;
+        
+        function renderTimeline() {
+            const bar = document.getElementById('timelineBar');
+            bar.innerHTML = '';
+            for(let t=0; t<=9; t++) {
+                const div = document.createElement('div');
+                div.className = `time-item ${t===currentTime?'active':''}`;
+                div.onclick = () => { currentTime = t; renderTimeline(); };
+                div.innerHTML = `<div class="num">${t}</div><div>${timeNames[t]}</div>`;
+                bar.appendChild(div);
+            }
+        }
+        
+        function renderJiugong() {
+            const grid = document.getElementById('jiugong');
+            grid.innerHTML = '';
+            luoshuOrder.forEach(p => {
+                const div = document.createElement('div');
+                div.className = `gong ${p===currentPalace?'selected':''}`;
+                div.onclick = () => { currentPalace = p; renderJiugong(); };
+                div.innerHTML = `<span class="num">${p}</span><span class="name">${palaceNames[p]}</span>`;
+                grid.appendChild(div);
+            });
+        }
+        
+        // ========== 工具函数 ==========
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+        
+        function escapeAttr(str) {
+            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        }
+        
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+            return (bytes/1024/1024).toFixed(1) + ' MB';
+        }
+    </script>
 </body>
 </html>
