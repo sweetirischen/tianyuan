@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私有空间 - 天垣</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+        
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .login-box h1 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .login-box p {
+            color: #888;
+            margin-bottom: 30px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            border: none;
+            border-radius: 8px;
+            color: #1a1a2e;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .error-msg {
+            color: #ff6b6b;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        /* 私有内容区域 */
+        .private-content {
+            display: none;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .private-content.visible {
+            display: block;
+        }
+        
+        .login-container.hidden {
+            display: none;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .status-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .status-card h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-value {
+            color: #4ade80;
+        }
+        
+        .status-value.pending {
+            color: #fbbf24;
+        }
+        
+        .status-value.error {
+            color: #f87171;
+        }
+        
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            color: #ffd700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录界面 -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h1>🔐 私有空间</h1>
+            <p>仅限帝君访问</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="输入密码" maxlength="20">
+            <button class="login-btn" onclick="checkPassword()">进入</button>
+            <p class="error-msg" id="errorMsg">密码错误，请重试</p>
+        </div>
+    </div>
+    
+    <!-- 私有内容 -->
+    <div class="private-content" id="privateContent">
+        <button class="logout-btn" onclick="logout()">退出</button>
+        
+        <h1 style="color: #ffd700; text-align: center; margin-bottom: 40px;">🏛️ 帝君私有空间</h1>
+        
+        <!-- 阿垣状态 -->
+        <div class="section">
+            <h2>🤖 阿垣状态</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h3>数字人体 v4</h3>
+                    <div class="status-item">
+                        <span>骨架结构</span>
+                        <span class="status-value">✅ 完成</span>
+                    </div>
+                    <div class="status-item">
+                        <span>五脏六腑</span>
+                        <span class="status-value">✅ 完成</span>
+                    </div>
+                    <div class="status-item">
+                        <span>经络通道</span>
+                        <span class="status-value">✅ 完成</span>
+                    </div>
+                    <div class="status-item">
+                        <span>LLM推理</span>
+                        <span class="status-value pending">⏳ 待接入</span>
+                    </div>
+                    <div class="status-item">
+                        <span>记忆系统</span>
+                        <span class="status-value pending">⏳ 待注入</span>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <h3>自动化任务</h3>
+                    <div class="status-item">
+                        <span>百家号发布</span>
+                        <span class="status-value">✅ 运行中</span>
+                    </div>
+                    <div class="status-item">
+                        <span>百家号签到</span>
+                        <span class="status-value pending">⏳ 待完成</span>
+                    </div>
+                    <div class="status-item">
+                        <span>帝国备份</span>
+                        <span class="status-value">✅ 运行中</span>
+                    </div>
+                    <div class="status-item">
+                        <span>一炁检查</span>
+                        <span class="status-value">✅ 运行中</span>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <h3>记忆系统</h3>
+                    <div class="status-item">
+                        <span>实体数量</span>
+                        <span class="status-value">42个</span>
+                    </div>
+                    <div class="status-item">
+                        <span>今日记忆</span>
+                        <span class="status-value">✅ 已更新</span>
+                    </div>
+                    <div class="status-item">
+                        <span>进化池</span>
+                        <span class="status-value">9个能力</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快捷操作 -->
+        <div class="section">
+            <h2>⚡ 快捷操作</h2>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <button class="login-btn" style="width: auto; padding: 12px 24px;" onclick="alert('百家号签到功能开发中...')">百家号签到</button>
+                <button class="login-btn" style="width: auto; padding: 12px 24px;" onclic
