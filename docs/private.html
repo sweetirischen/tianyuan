@@ -473,8 +473,11 @@ print('图表已保存')
     <script>
         // ========== 配置 ==========
         const CONFIG = {
-            authKey: 'ADY0X9',
-            serverUrl: localStorage.getItem('tianyuan-server') || 'http://localhost:5000',
+            authKey: 'aheng',
+            // 自动检测：如果通过Cloudflare访问，使用当前域名；否则使用localhost
+            serverUrl: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:5000'
+                : `${window.location.protocol}//${window.location.host}`,
             workspace: 'C:\\Users\\Administrator'
         };
         

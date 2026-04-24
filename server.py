@@ -28,7 +28,7 @@ CORS(app)
 
 # 配置
 CONFIG = {
-    'secret_key': 'ADY0X9',  # 访问密钥
+    'secret_key': 'aheng',  # 访问密钥
     'timeout': 60,  # 代码执行超时（秒）
     'max_output': 100000,  # 最大输出字符数
     'workspace': r'C:\Users\Administrator',  # 工作空间根目录
@@ -347,7 +347,7 @@ if __name__ == '__main__':
 ║                  天垣本地服务 - 启动成功                    ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  本地访问: http://localhost:5000                           ║
-║  密钥: {CONFIG['secret_key']}                                        ║
+║  密钥: {CONFIG['secret_key']}                                          ║
 ║  工作空间: {CONFIG['workspace']}                 ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  API接口:                                                 ║

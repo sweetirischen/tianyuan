@@ -31,7 +31,7 @@ echo ═════════════════════════
 echo   远程访问地址将在下方显示
 echo   格式: https://xxx.trycloudflare.com
 echo   
-echo   密码: ADY0X9
+echo   密码: aheng
 echo ═══════════════════════════════════════════════════════════
 echo.
 

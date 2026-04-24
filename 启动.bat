@@ -41,7 +41,7 @@ echo ═════════════════════════
 echo   远程地址将在下方显示，格式:
 echo   https://xxx.trycloudflare.com
 echo   
-echo   密码: ADY0X9
+echo   密码: aheng
 echo ═══════════════════════════════════════════════════════════
 echo.
 cloudflared.exe tunnel --url http://localhost:5000
