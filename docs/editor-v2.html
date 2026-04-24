@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身国编辑器 · 天圆地方</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* 顶部工具栏 */
+        .toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(20, 20, 30, 0.95);
+            border-bottom: 1px solid #c9a227;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .toolbar h1 {
+            font-size: 20px;
+            color: #c9a227;
+            margin-right: 40px;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: 1px solid #c9a227;
+            color: #c9a227;
+            padding: 8px 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .toolbar-btn:hover {
+            background: #c9a227;
+            color: #0a0a0a;
+        }
+
+        .toolbar-btn.active {
+            background: #c9a227;
+            color: #0a0a0a;
+        }
+
+        /* 主容器 */
+        .main-container {
+            display: flex;
+            padding-top: 60px;
+            min-height: 100vh;
+        }
+
+        /* 左侧时间轴 */
+        .timeline {
+            width: 80px;
+            background: rgba(20, 20, 30, 0.9);
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 10px;
+        }
+
+        .timeline-label {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .timeline-item {
+            width: 60px;
+            height: 60px;
+            margin: 5px auto;
+            border: 1px solid #444;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(30, 30, 40, 0.8);
+        }
+
+        .timeline-item:hover {
+            border-color: #c9a227;
+            background: rgba(201, 162, 39, 0.1);
+        }
+
+        .timeline-item.active {
+            border-color: #c9a227;
+            background: rgba(201, 162, 39, 0.2);
+            box-shadow: 0 0 15px rgba(201, 162, 39, 0.3);
+        }
+
+        .timeline-item .num {
+            font-size: 24px;
+            font-weight: bold;
+            color: #c9a227;
+        }
+
+        .timeline-item .name {
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* 中央编辑区 */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        /* 天圆地方容器 */
+        .tianyuan-difang {
+            position: relative;
+            width: 600px;
+            height: 600px;
+        }
+
+        /* 外圆 - 天 - 0 */
+        .outer-circle {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            border: 3px solid #c9a227;
+            background: radial-gradient(circle, rgba(201, 162, 39, 0.05) 0%, transparent 70%);
+            box-shadow: 0 0 30px rgba(201, 162, 39, 0.2), inset 0 0 50px rgba(201, 162, 39, 0.1);
+        }
+
+        .outer-circle::before {
+            content: '0 · 混沌 · 天';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #c9a227;
+            letter-spacing: 4px;
+        }
+
+        /* 外圆可编辑区域 */
+        .circle-zone {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .circle-zone:hover {
+            background: rgba(201, 162, 39, 0.1);
+        }
+
+        /* 内方 - 地 - 九宫 */
+        .inner-square {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            left: 100px;
+            top: 100px;
+            background: rgba(20, 20, 30, 0.9);
+            border: 2px solid #c9a227;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+        }
+
+        /* 九宫格子 */
+        .palace {
+            border: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .palace:hover {
+            background: rgba(201, 162, 39, 0.15);
+            border-color: #c9a227;
+        }
+
+        .palace.selected {
+            background: rgba(201, 162, 39, 0.25);
+            border-color: #c9a227;
+            box-shadow: inset 0 0 20px rgba(201, 162, 39, 0.3);
+        }
+
+        .palace .num {
+            font-size: 32px;
+            font-weight: bold;
+            color: #c9a227;
+        }
+
+        .palace .name {
+            font-size: 16px;
+            color: #e0e0e0;
+            margin-top: 5px;
+        }
+
+        .palace .wuxing {
+            font-size: 12px;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .palace .meaning {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        /* 九宫颜色 */
+        .palace-1 { background: rgba(30, 60, 80, 0.3); } /* 坎·水 */
+        .palace-2 { background: rgba(80, 70, 40, 0.3); } /* 坤·土 */
+        .palace-3 { background: rgba(40, 80, 40, 0.3); } /* 震·木 */
+        .palace-4 { background: rgba(50, 90, 50, 0.3); } /* 巽·木 */
+        .palace-5 { background: rgba(90, 80, 40, 0.3); } /* 中·土 */
+        .palace-6 { background: rgba(80, 80, 60, 0.3); } /* 乾·金 */
+        .palace-7 { background: rgba(80, 80, 70, 0.3); } /* 兑·金 */
+        .palace-8 { background: rgba(80, 70, 50, 0.3); } /* 艮·土 */
+        .palace-9 { background: rgba(100, 50, 40, 0.3); } /* 离·火 */
+
+        /* 右侧属性面板 */
+        .property-panel {
+            width: 300px;
+            background: rgba(20, 20, 30, 0.95);
+            border-left: 1px solid #333;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            color: #c9a227;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .panel-section {
+            margin-bottom: 20px;
+        }
+
+        .panel-section h3 {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .panel-input {
+            width: 100%;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .panel-input:focus {
+            outline: none;
+            border-color: #c9a227;
+        }
+
+        .panel-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        .panel-textarea:focus {
+            outline: none;
+            border-color: #c9a227;
+        }
+
+        /* 三垣标签 */
+        .yuan-tabs {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .yuan-tab {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #444;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .yuan-tab:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .yuan-tab:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .yuan-tab.active {
+            background: rgba(201, 162, 39, 0.2);
+            border-color: #c9a227;
+            color: #c9a227;
+        }
+
+        /* 信息展示 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            background: rgba(30, 30, 40, 0.5);
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .info-item label {
+            font-size: 11px;
+            color: #888;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .info-item span {
+            font-size: 14px;
+            color: #c9a227;
+        }
+
+        /* 底部状态栏 */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: rgba(20, 20, 30, 0.95);
+            border-top: 1px solid #333;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .status-bar span {
+            margin-right: 20px;
+        }
+
+        .status-bar .highlight {
+            color: #c9a227;
+        }
+
+        /* 0的特殊样式 - 点击外圆 */
+        .zero-overlay {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .zero-overlay.active {
+            pointer-events: auto;
+            background: rgba(201, 162, 39, 0.1);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部工具栏 -->
+    <div class="toolbar">
+        <h1>身国编辑器 · 天圆地方</h1>
+        <button class="toolbar-btn" onclick="saveData()">保存</button>
+        <button class="toolbar-btn" onclick="exportHTML()">导出</button>
+        <button class="toolbar-btn" onclick="preview()">预览</button>
+        <button class="toolbar-btn" onclick="clearAll()">清空</button>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 左侧时间轴 -->
+        <div class="timeline">
+            <div class="timeline-label">时间轴</div>
+            <div class="timeline-item active" data-time="0" onclick="selectTime(0)">
+                <span class="num">0</span>
+                <span class="name">混沌</span>
+            </div>
+            <div class="timeline-item" data-time="1" onclick="selectTime(1)">
+                <span class="num">1</span>
+                <span class="name">起源</span>
+            </div>
+            <div class="timeline-item" data-time="2" onclick="selectTime(2)">
+                <span class="num">2</span>
+                <span class="name">承载</span>
+            </div>
+            <div class="timeline-item" data-time="3" onclick="selectTime(3)">
+                <span class="num">3</span>
+                <span class="name">生发</span>
+            </div>
+            <div class="timeline-item" data-time="4" onclick="selectTime(4)">
+                <span class="num">4</span>
+                <span class="name">运化</span>
+            </div>
+            <div class="timeline-item" data-time="5" onclick="selectTime(5)">
+                <span class="num">5</span>
+                <span class="name">核心</span>
+            </div>
+            <div class="timeline-item" data-time="6" onclick="selectTime(6)">
+                <span class="num">6</span>
+                <span class="name">收敛</span>
+            </div>
+            <div class="timeline-item" data-time="7" onclick="selectTime(7)">
+                <span class="num">7</span>
+                <span class="name">显现</span>
+            </div>
+            <div class="timeline-item" data-time="8" onclick="selectTime(8)">
+                <span class="num">8</span>
+                <span class="name">存储</span>
+            </div>
+            <div class="timeline-item" data-time="9" onclick="selectTime(9)">
+                <span class="num">9</span>
+                <span class="name">升华</span>
+            </div>
+        </div>
+
+        <!-- 中央编辑区 -->
+        <div class="editor-area">
+            <div class="tianyuan-difang">
+                <!-- 外圆 - 天 - 0 -->
+                <div class="outer-circle" onclick="selectZero()">
+                    <div class="circle-zone"></div>
+                </div>
+                
+                <!-- 内方 - 地 - 九宫 -->
+                <div class="inner-square">
+                    <!-- 洛书布局: 4-9-2 / 3-5-7 / 8-1-6 -->
+                    <div class="palace palace-4" data-palace="4" onclick="selectPalace(4)">
+                        <span class="num">4</span>
+                        <span class="name">巽</span>
+                        <span class="wuxing">木</span>
+                        <span class="meaning">运化</span>
+                    </div>
+                    <div class="palace palace-9" data-palace="9" onclick="selectPalace(9)">
+                        <span class="num">9</span>
+                        <span class="name">离</span>
+                        <span class="wuxing">火</span>
+                        <span class="meaning">升华</span>
+                    </div>
+                    <div class="palace palace-2" data-palace="2" onclick="selectPalace(2)">
+                        <span class="num">2</span>
+                        <span class="name">坤</span>
+                        <span class="wuxing">土</span>
+                        <span class="meaning">承载</span>
+                    </div>
+                    <div class="palace palace-3" data-palace="3" onclick="selectPalace(3)">
+                        <span class="num">3</span>
+                        <span class="name">震</span>
+                        <span class="wuxing">木</span>
+                        <span class="meaning">生发</span>
+                    </div>
+                    <div class="palace palace-5" data-palace="5" onclick="selectPalace(5)">
+                        <span class="num">5</span>
+                        <span class="name">中</span>
+                        <span class="wuxing">土</span>
+                        <span class="meaning">核心</span>
+                    </div>
+                    <div class="palace palace-7" data-palace="7" onclick="selectPalace(7)">
+                        <span class="num">7</span>
+                        <span class="name">兑</span>
+                        <span class="wuxing">金</span>
+                        <span class="meaning">显现</span>
+                    </div>
+                    <div class="palace palace-8" data-palace="8" onclick="selectPalace(8)">
+                        <span class="num">8</span>
+                        <span class="name">艮</span>
+                        <span class="wuxing">土</span>
+                        <span class="meaning">存储</span>
+                    </div>
+                    <div class="palace palace-1" data-palace="1" onclick="selectPalace(1)">
+                        <span class="num">1</span>
+                        <span class="name">坎</span>
+                        <span class="wuxing">水</span>
+                        <span class="meaning">起源</span>
+                    </div>
+                    <div class="palace palace-6" data-palace="6" onclick="selectPalace(6)">
+                        <span class="num">6</span>
+                        <span class="name">乾</span>
+                        <span class="wuxing">金</span>
+                        <span class="meaning">收敛</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧属性面板 -->
+        <div class="property-panel">
+            <div class="panel-title">属性编辑</div>
+            
+            <!-- 三垣切换 -->
+            <div class="yuan-tabs">
+                <div class="yuan-tab active" data-yuan="tian" onclick="selectYuan('tian')">天垣</div>
+                <div class="yuan-tab" data-yuan="di" onclick="selectYuan('di')">地垣</div>
+                <div class="yuan-tab" data-yuan="ren" onclick="selectYuan('ren')">人垣</div>
+            </div>
+
+            <!-- 当前选中信息 -->
+            <div class="panel-section">
+                <h3>当前选中</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>宫位</label>
+                        <span id="info-palace">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>时间层</label>
+                        <span id="info-time">0</span>
+                    </div>
+                    <div class="info-item">
+                        <label>五行</label>
+                        <span id="info-wuxing">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>垣层</label>
+                        <span id="info-yuan">天垣</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容编辑 -->
+            <div class="panel-section">
+                <h3>标题</h3>
+                <input type="text" class="panel-input" id="content-title" placeholder="输入标题...">
+            </div>
+
+            <div class="panel-section">
+                <h3>内容</h3>
+                <textarea class="panel-textarea" id="content-body" placeholder="输入内容..."></textarea>
+            </div>
+
+            <div class="panel-section">
+                <h3>标签</h3>
+                <input type="text" class="panel-input" id="content-tags" placeholder="标签1, 标签2, ...">
+            </div>
+
+            <div class="panel-section">
+                <h3>链接</h3>
+                <input type="text" class="panel-input" id="content-link" placeholder="https://...">
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部状态栏 -->
+    <div class="status-bar">
+        <span>时间层: <span class="highlight" id="status-time">0·混沌</span></span>
+        <span>宫位: <span class="highlight" id="status-palace">外圆·天</span></span>
+        <span>三垣: <span class="highlight" id="status-yuan">天垣</span></span>
+        <span style="margin-left: auto;">宇宙平衡数: 15</span>
+    </div>
+
+    <script>
+        // 九宫数据
+        const palaceData = {
+            0: { name: '混沌', wuxing: '-', meaning: '天圆', yuan: 'tian' },
+            1: { name: '坎', wuxing: '水', meaning: '起源', yuan: 'ren' },
+            2: { name: '坤', wuxing: '土', meaning: '承载', yuan: 'tian' },
+            3: { name: '震', wuxing: '木', meaning: '生发', yuan: 'di' },
+            4: { name: '巽', wuxing: '木', meaning: '运化', yuan: 'ren' },
+            5: { name: '中', wuxing: '土', meaning: '核心', yuan: 'tian' },
+            6: { name: '乾', wuxing: '金', meaning: '收敛', yuan: 'di' },
+            7: { name: '兑', wuxing: '金', meaning: '显现', yuan: 'ren' },
+            8: { name: '艮', wuxing: '土', meaning: '存储', yuan: 'di' },
+            9: { name: '离', wuxing: '火', meaning: '升华', yuan: 'tian' }
+        };
+
+        // 时间层名称
+        const timeNames = {
+            0: '混沌', 1: '起源', 2: '承载', 3: '生发', 4: '运化',
+            5: '核心', 6: '收敛', 7: '显现', 8: '存储', 9: '升华'
+        };
+
+        // 三垣名称
+        const yuanNames = { tian: '天垣', di: '地垣', ren: '人垣' };
+
+        // 当前状态
+        let currentTime = 0;
+        let currentPalace = 0;
+        let currentYuan = 'tian';
+
+        // 数据存储
+        let editorData = {};
+
+        // 选择时间层
+        function selectTime(time) {
+            currentTime = time;
+            document.querySelectorAll('.timeline-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelector(`.timeline-item[data-time="${time}"]`).classList.add('active');
+            updateStatus();
+            loadData();
+        }
+
+        // 选择宫位
+        function selectPalace(palace) {
+            currentPalace = palace;
+            document.querySelectorAll('.palace').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.querySelector(`.palace-${palace}`).classList.add('selected');
+            
+            // 自动切换到对应三垣
+            const yuan = palaceData[palace].yuan;
+            selectYuan(yuan);
+            
+            updateStatus();
+            loadData();
+        }
+
+        // 选择外圆(0)
+        function selectZero() {
+            currentPalace = 0;
+            document.querySelectorAll('.palace').forEach(el => {
+                el.classList.remove('selected');
+            });
+            updateStatus();
+            loadData();
+        }
+
+        // 选择三垣
+        function selectYuan(yuan) {
+            currentYuan = yuan;
+            document.querySelectorAll('.yuan-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelector(`.yuan-tab[data-yuan="${yuan}"]`).classList.add('active');
+            updateStatus();
+        }
+
+        // 更新状态显示
+        function updateStatus() {
+            const palace = palaceData[currentPalace];
+            document.getElementById('info-palace').textContent = currentPalace === 0 ? '外圆' : `${currentPalace}·${palace.name}`;
+            document.getElementById('info-time').textContent = currentTime;
+            document.getElementById('info-wuxing').textContent = palace.wuxing;
+            document.getElementById('info-yuan').textContent = yuanNames[currentYuan];
+            
+            document.getElementById('status-time').textContent = `${currentTime}·${timeNames[currentTime]}`;
+            document.getElementById('status-palace').textContent = currentPalace === 0 ? '外圆·天' : `${currentPalace}·${palace.name}`;
+            document.getElementById('status-yuan').textContent = yuanNames[currentYuan];
+        }
+
+        // 加载数据
+        function loadData() {
+            const key = `${currentTime}-${currentPalace}-${currentYuan}`;
+            const data = editorData[key] || { title: '', body: '', tags: '', link: '' };
+            
+            document.getElementById('content-title').value = data.title;
+            document.getElementById('content-body').value = data.body;
+            document.getElementById('content-tags').value = data.tags;
+            document.getElementById('content-link').value = data.link;
+        }
+
+        // 保存数据
+        function saveData() {
+            const key = `${currentTime}-${currentPalace}-${currentYuan}`;
+            editorData[key] = {
+                title: document.getElementById('content-title').value,
+                body: document.getElementById('content-body').value,
+                tags: document.getElementById('content-tags').value,
+                link: document.getElementById('content-link').value
+            };
+            
+            // 保存到localStorage
+            localStorage.setItem('tianyuan-editor-data', JSON.stringify(editorData));
+            alert('保存成功！');
+        }
+
+        // 导出HTML
+        function exportHTML() {
+            const html = document.documentElement.outerHTML;
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `身国编辑器_${new Date().toISOString().slice(0,10)}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 预览
+        function preview() {
+            const key = `${currentTime}-${currentPalace}-${currentYuan}`;
+            const data = editorData[key];
+            if (data) {
+                alert(`标题: ${data.title}\n内容: ${data.body}\n标签: ${data.tags}\n链接: ${data.link}`);
+            } else {
+                alert('当前格子没有内容');
+            }
+        }
+
+        // 清空
+        function clearAll() {
+            if (confirm('确定要清空所有数据吗？')) {
+                editorData = {};
+                localStorage.removeItem('tianyuan-editor-data');
+                document.getElementById('content-title').value = '';
+                document.getElementById('content-body').value = '';
+                document.getElementById('content-tags').value = '';
+                document.getElementById('content-link').value = '';
+                alert('已清空');
+            }
+        }
+
+        // 初始化
+        function init() {
+            // 从localStorage加载数据
+            const saved = localStorage.getItem('tianyuan-editor-data');
+            if (saved) {
+                editorData = JSON.parse(saved);
+            }
+            
+            // 监听输入变化，自动保存
+            ['content-title', 'content-body', 'content-tags', 'content-link'].forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    const key = `${currentTime}-${currentPalace}-${currentYuan}`;
+                    editorData[key] = {
+                        title: document.getElementById('content-title').value,
+                        body: document.getElementById('content-body').value,
+                        tags: document.getElementById('content-tags').value,
+                        link: document.getElementById('content-link').value
+                    };
+                });
+            });
+            
+            updateStatus();
+        }
+
+        init();
+    </script>
+</body>
+</html>
