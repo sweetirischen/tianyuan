@@ -47,12 +47,13 @@ def auth_middleware():
     # 允许OPTIONS请求
     if request.method == 'OPTIONS':
         return None
-    # 允许静态资源
-    if request.path.startswith('/static'):
+    # 允许静态资源和首页
+    if request.path.startswith('/static') or request.path == '/' or request.path.endswith('.html') or request.path.endswith('.js') or request.path.endswith('.css'):
         return None
-    # 验证密钥
-    if not check_auth(request):
-        return jsonify({'error': '未授权访问'}), 401
+    # API接口需要验证密钥
+    if request.path.startswith('/api/'):
+        if not check_auth(request):
+            return jsonify({'error': '未授权访问'}), 401
 
 # ========== 代码执行 ==========
 @app.route('/api/run', methods=['POST'])
