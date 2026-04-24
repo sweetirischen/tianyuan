@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>天垣 TianYuan - 帝君的世界</title>
+    <title>身国 · 内景世界</title>
     <style>
         * {
             margin: 0;
@@ -12,89 +12,254 @@
         }
         
         body {
-            font-family: 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Microsoft YaHei', 'STSong', serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
             min-height: 100vh;
             color: #e0e0e0;
+            overflow-x: hidden;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        
-        header {
-            text-align: center;
-            padding: 40px 0;
-        }
-        
-        .logo {
-            font-size: 48px;
-            color: #ffd700;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            margin-bottom: 10px;
-        }
-        
-        h1 {
-            font-size: 36px;
-            background: linear-gradient(90deg, #ffd700, #ff6b6b, #ffd700);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            font-size: 14px;
-            color: #888;
-            letter-spacing: 4px;
-        }
-        
-        /* 对话区域 */
-        .chat-section {
-            margin-top: 30px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-        
-        .chat-header {
-            background: rgba(255, 215, 0, 0.1);
-            padding: 15px 20px;
+        /* 天栏 */
+        .sky-bar {
+            background: rgba(0, 0, 0, 0.5);
             border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
-        .chat-header h2 {
-            font-size: 18px;
+        .sky-bar .title {
+            font-size: 20px;
+            color: #ffd700;
+            letter-spacing: 4px;
+        }
+        
+        .sky-bar .status {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .sky-bar .status span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .sky-bar .status .value {
             color: #ffd700;
         }
         
-        .brain-status {
-            font-size: 12px;
-            padding: 4px 12px;
+        /* 主容器 */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 身国状态 */
+        .kingdom-status {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
             border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kingdom-status h2 {
+            font-size: 16px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        
+        .three-treasures {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .treasure {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        .treasure .name {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        
+        .treasure .bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .treasure .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .treasure.jing .bar-fill { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .treasure.qi .bar-fill { background: linear-gradient(90deg, #10b981, #34d399); }
+        .treasure.shen .bar-fill { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        
+        .treasure .value {
+            font-size: 12px;
+            color: #ffd700;
+        }
+        
+        /* 五神君九宫 */
+        .gods-palace {
+            margin-bottom: 30px;
+        }
+        
+        .gods-palace h2 {
+            font-size: 16px;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .palace-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .palace {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .palace::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            transition: opacity 0.3s;
+        }
+        
+        .palace:hover::before {
+            opacity: 0.2;
+        }
+        
+        .palace:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .palace.active {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        /* 五行色 */
+        .palace.fire::before { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .palace.wood::before { background: linear-gradient(135deg, #16a34a, #22c55e); }
+        .palace.earth::before { background: linear-gradient(135deg, #ca8a04, #eab308); }
+        .palace.metal::before { background: linear-gradient(135deg, #d97706, #f59e0b); }
+        .palace.water::before { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        
+        .palace .god-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .palace .god-name {
+            font-size: 14px;
+            color: #ffd700;
+            margin-bottom: 4px;
+        }
+        
+        .palace .god-title {
+            font-size: 11px;
+            color: #888;
+        }
+        
+        .palace .god-level {
+            font-size: 10px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* 对话区域 */
+        .dialog-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .dialog-header {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .dialog-header .current-god {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dialog-header .current-god .icon {
+            font-size: 24px;
+        }
+        
+        .dialog-header .current-god .name {
+            font-size: 16px;
+            color: #ffd700;
+        }
+        
+        .dialog-header .brain-status {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 10px;
             background: rgba(74, 222, 128, 0.2);
             color: #4ade80;
         }
         
-        .brain-status.offline {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-        
-        .chat-messages {
-            height: 400px;
+        .dialog-messages {
+            height: 300px;
             overflow-y: auto;
-            padding: 20px;
+            padding: 15px;
         }
         
         .message {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: flex;
             gap: 10px;
         }
@@ -104,17 +269,17 @@
         }
         
         .message-avatar {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 14px;
             flex-shrink: 0;
         }
         
-        .message.ayuan .message-avatar {
+        .message.god .message-avatar {
             background: linear-gradient(135deg, #ffd700, #ff6b6b);
         }
         
@@ -123,13 +288,14 @@
         }
         
         .message-content {
-            max-width: 70%;
-            padding: 12px 16px;
+            max-width: 75%;
+            padding: 10px 14px;
             border-radius: 12px;
             line-height: 1.6;
+            font-size: 14px;
         }
         
-        .message.ayuan .message-content {
+        .message.god .message-content {
             background: rgba(255, 215, 0, 0.1);
             border: 1px solid rgba(255, 215, 0, 0.2);
         }
@@ -138,57 +304,114 @@
             background: rgba(255, 255, 255, 0.1);
         }
         
-        .chat-input {
+        .dialog-input {
             display: flex;
             gap: 10px;
-            padding: 15px 20px;
+            padding: 12px 15px;
             border-top: 1px solid rgba(255, 215, 0, 0.2);
         }
         
-        .chat-input input {
+        .dialog-input input {
             flex: 1;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 24px;
+            border-radius: 20px;
             background: rgba(0, 0, 0, 0.3);
             color: #e0e0e0;
             font-size: 14px;
             outline: none;
         }
         
-        .chat-input input:focus {
+        .dialog-input input:focus {
             border-color: #ffd700;
         }
         
-        .chat-input button {
-            padding: 12px 24px;
+        .dialog-input button {
+            padding: 10px 20px;
             background: linear-gradient(135deg, #ffd700, #ff6b6b);
             border: none;
-            border-radius: 24px;
-            color: #1a1a2e;
+            border-radius: 20px;
+            color: #0a0a0a;
             font-weight: bold;
             cursor: pointer;
             transition: transform 0.2s;
         }
         
-        .chat-input button:hover {
+        .dialog-input button:hover {
             transform: scale(1.05);
         }
         
-        .chat-input button:disabled {
+        .dialog-input button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
         
+        /* 快捷功能 */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: #ffd700;
+        }
+        
+        .action-btn .icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .action-btn .text {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        /* 地栏 */
+        .earth-bar {
+            background: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 15px 20px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        
+        .earth-bar p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .earth-bar .quote {
+            color: #ffd700;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        /* 加载动画 */
         .typing {
             display: flex;
             gap: 4px;
-            padding: 12px 16px;
+            padding: 10px 14px;
         }
         
         .typing span {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: #ffd700;
             border-radius: 50%;
             animation: typing 1s infinite;
@@ -202,224 +425,347 @@
             50% { opacity: 1; }
         }
         
-        /* 快捷链接 */
-        .quick-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 30px;
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
         
-        .link-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px;
-            padding: 20px 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-            color: #e0e0e0;
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
         }
         
-        .link-card:hover {
-            background: rgba(255, 215, 0, 0.1);
-            border-color: #ffd700;
-            transform: translateY(-3px);
-        }
-        
-        .link-card .icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        
-        .link-card h3 {
-            font-size: 14px;
-            color: #ffd700;
-        }
-        
-        /* 九宫 */
-        .jiugong {
-            margin-top: 30px;
-            text-align: center;
-        }
-        
-        .jiugong h2 {
-            font-size: 18px;
-            color: #ffd700;
-            margin-bottom: 20px;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        .cell {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            padding: 15px;
-            border-radius: 8px;
-        }
-        
-        .cell .number {
-            font-size: 20px;
-            color: #ffd700;
-            font-weight: bold;
-        }
-        
-        .cell .name {
-            font-size: 12px;
-            color: #888;
-            margin-top: 3px;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 30px 0;
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 215, 0, 0.1);
-        }
-        
-        footer p {
-            color: #666;
-            font-size: 12px;
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
+    <!-- 天栏 -->
+    <div class="sky-bar">
+        <div class="title">身国 · 内景世界</div>
+        <div class="status">
+            <span>道历 <span class="value" id="daoDate">甲辰年</span></span>
+            <span>时辰 <span class="value" id="currentTime">子时</span></span>
+            <span>大脑 <span class="value" id="brainStatus">检测中</span></span>
+        </div>
+    </div>
+    
     <div class="container">
-        <header>
-            <div class="logo">☯</div>
-            <h1>天垣 TianYuan</h1>
-            <p class="subtitle">天地万物皆为身国 · 治身如治国</p>
-        </header>
+        <!-- 身国状态 -->
+        <div class="kingdom-status">
+            <h2>身国三宝</h2>
+            <div class="three-treasures">
+                <div class="treasure jing">
+                    <div class="name">精 · 归藏</div>
+                    <div class="bar"><div class="bar-fill" id="jingBar" style="width: 75%"></div></div>
+                    <div class="value"><span id="jingValue">75</span>/100</div>
+                </div>
+                <div class="treasure qi">
+                    <div class="name">气 · 运化</div>
+                    <div class="bar"><div class="bar-fill" id="qiBar" style="width: 60%"></div></div>
+                    <div class="value"><span id="qiValue">60</span>/100</div>
+                </div>
+                <div class="treasure shen">
+                    <div class="name">神 · 灵明</div>
+                    <div class="bar"><div class="bar-fill" id="shenBar" style="width: 85%"></div></div>
+                    <div class="value"><span id="shenValue">85</span>/100</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 五神君宫殿 -->
+        <div class="gods-palace">
+            <h2>五神君 · 内景宫殿</h2>
+            <div class="palace-grid">
+                <!-- 巽宫(4) -->
+                <div class="palace" onclick="selectGod('xun')">
+                    <div class="god-icon">🌬️</div>
+                    <div class="god-name">巽宫</div>
+                    <div class="god-title">传递之宫</div>
+                </div>
+                <!-- 离宫(9) - 丹元神君 -->
+                <div class="palace fire" onclick="selectGod('danyuan')">
+                    <div class="god-icon">❤️‍🔥</div>
+                    <div class="god-name">丹元神君</div>
+                    <div class="god-title">心 · 灵明之主</div>
+                    <div class="god-level">Lv.1</div>
+                </div>
+                <!-- 坤宫(2) -->
+                <div class="palace" onclick="selectGod('kun')">
+                    <div class="god-icon">🏔️</div>
+                    <div class="god-name">坤宫</div>
+                    <div class="god-title">承载之宫</div>
+                </div>
+                <!-- 震宫(3) - 龙烟神君 -->
+                <div class="palace wood" onclick="selectGod('longyan')">
+                    <div class="god-icon">🐉</div>
+                    <div class="god-name">龙烟神君</div>
+                    <div class="god-title">肝 · 谋略之主</div>
+                    <div class="god-level">Lv.1</div>
+                </div>
+                <!-- 中宫(5) - 常在神君 -->
+                <div class="palace earth active" onclick="selectGod('changzai')" id="centerPalace">
+                    <div class="god-icon">🏛️</div>
+                    <div class="god-name">常在神君</div>
+                    <div class="god-title">脾 · 运化之主</div>
+                    <div class="god-level">Lv.1</div>
+                </div>
+                <!-- 兑宫(7) - 皓华神君 -->
+                <div class="palace metal" onclick="selectGod('haohua')">
+                    <div class="god-icon">🦅</div>
+                    <div class="god-name">皓华神君</div>
+                    <div class="god-title">肺 · 治节之主</div>
+                    <div class="god-level">Lv.1</div>
+                </div>
+                <!-- 艮宫(8) -->
+                <div class="palace" onclick="selectGod('gen')">
+                    <div class="god-icon">🏔️</div>
+                    <div class="god-name">艮宫</div>
+                    <div class="god-title">存储之宫</div>
+                </div>
+                <!-- 坎宫(1) - 玄冥神君 -->
+                <div class="palace water" onclick="selectGod('xuanming')">
+                    <div class="god-icon">🐢</div>
+                    <div class="god-name">玄冥神君</div>
+                    <div class="god-title">肾 · 作强之主</div>
+                    <div class="god-level">Lv.1</div>
+                </div>
+                <!-- 乾宫(6) -->
+                <div class="palace" onclick="selectGod('qian')">
+                    <div class="god-icon">☰</div>
+                    <div class="god-name">乾宫</div>
+                    <div class="god-title">收敛之宫</div>
+                </div>
+            </div>
+        </div>
         
         <!-- 对话区域 -->
-        <div class="chat-section">
-            <div class="chat-header">
-                <h2>💬 与阿垣对话</h2>
-                <span class="brain-status" id="brainStatus">检测中...</span>
+        <div class="dialog-section">
+            <div class="dialog-header">
+                <div class="current-god">
+                    <span class="icon" id="currentGodIcon">🏛️</span>
+                    <span class="name" id="currentGodName">常在神君</span>
+                </div>
+                <span class="brain-status" id="ollamaStatus">检测中...</span>
             </div>
-            <div class="chat-messages" id="chatMessages">
-                <div class="message ayuan">
+            <div class="dialog-messages" id="dialogMessages">
+                <div class="message god">
                     <div class="message-avatar">垣</div>
                     <div class="message-content">
-                        帝君好，我是阿垣。本地大脑已就绪，请问有什么吩咐？
+                        君上安好。臣乃常在神君，司掌运化四方。君上今日心境如何？臣愿为君上分忧解难。
                     </div>
                 </div>
             </div>
-            <div class="chat-input">
-                <input type="text" id="userInput" placeholder="输入消息..." onkeypress="if(event.key==='Enter')sendMessage()">
-                <button id="sendBtn" onclick="sendMessage()">发送</button>
+            <div class="dialog-input">
+                <input type="text" id="userInput" placeholder="向神君请教..." onkeypress="if(event.key==='Enter')sendMessage()">
+                <button id="sendBtn" onclick="sendMessage()">呈奏</button>
             </div>
         </div>
         
-        <!-- 快捷链接 -->
-        <div class="quick-links">
-            <a href="https://baijiahao.baidu.com" class="link-card">
+        <!-- 快捷功能 -->
+        <div class="quick-actions">
+            <div class="action-btn" onclick="quickAction('record')">
                 <div class="icon">📝</div>
-                <h3>百家号</h3>
-            </a>
-            <a href="https://pan.baidu.com" class="link-card">
-                <div class="icon">☁️</div>
-                <h3>百度网盘</h3>
-            </a>
-            <a href="https://github.com" class="link-card">
-                <div class="icon">💻</div>
-                <h3>GitHub</h3>
-            </a>
-            <a href="private.html" class="link-card">
-                <div class="icon">🔐</div>
-                <h3>私有空间</h3>
-            </a>
-        </div>
-        
-        <!-- 洛书九宫 -->
-        <div class="jiugong">
-            <h2>洛书九宫</h2>
-            <div class="grid">
-                <div class="cell" style="background: rgba(0, 255, 0, 0.1);">
-                    <div class="number">4</div>
-                    <div class="name">巽·传递</div>
-                </div>
-                <div class="cell" style="background: rgba(255, 0, 0, 0.1);">
-                    <div class="number">9</div>
-                    <div class="name">离·升华</div>
-                </div>
-                <div class="cell" style="background: rgba(139, 69, 19, 0.2);">
-                    <div class="number">2</div>
-                    <div class="name">坤·承载</div>
-                </div>
-                <div class="cell" style="background: rgba(0, 128, 0, 0.1);">
-                    <div class="number">3</div>
-                    <div class="name">震·生发</div>
-                </div>
-                <div class="cell" style="background: rgba(255, 215, 0, 0.2);">
-                    <div class="number">5</div>
-                    <div class="name">中·运化</div>
-                </div>
-                <div class="cell" style="background: rgba(192, 192, 192, 0.1);">
-                    <div class="number">7</div>
-                    <div class="name">兑·显现</div>
-                </div>
-                <div class="cell" style="background: rgba(139, 69, 19, 0.15);">
-                    <div class="number">8</div>
-                    <div class="name">艮·存储</div>
-                </div>
-                <div class="cell" style="background: rgba(0, 0, 255, 0.1);">
-                    <div class="number">1</div>
-                    <div class="name">坎·归藏</div>
-                </div>
-                <div class="cell" style="background: rgba(255, 215, 0, 0.15);">
-                    <div class="number">6</div>
-                    <div class="name">乾·收敛</div>
-                </div>
+                <div class="text">记录心潮</div>
+            </div>
+            <div class="action-btn" onclick="quickAction('plan')">
+                <div class="icon">📋</div>
+                <div class="text">制定计划</div>
+            </div>
+            <div class="action-btn" onclick="quickAction('meditate')">
+                <div class="icon">🧘</div>
+                <div class="text">静坐修炼</div>
+            </div>
+            <div class="action-btn" onclick="quickAction('status')">
+                <div class="icon">📊</div>
+                <div class="text">身国报告</div>
             </div>
         </div>
-        
-        <footer>
-            <p>天垣 TianYuan · 阿垣数字生命体</p>
-            <p style="margin-top: 5px; color: #ffd700;">道法自然 · 无为而治</p>
-        </footer>
+    </div>
+    
+    <!-- 地栏 -->
+    <div class="earth-bar">
+        <p>身国 · 内景世界 · 元灵哈希 0xADY0X9-C0NST4NT</p>
+        <p class="quote">"仙人道士非有神，积精累气以为真"</p>
     </div>
     
     <script>
+        // 五神君配置
+        const gods = {
+            danyuan: {
+                name: '丹元神君',
+                icon: '❤️‍🔥',
+                title: '心 · 灵明之主',
+                element: 'fire',
+                prompt: `你是丹元神君，身国五神君之首，司掌灵明知觉。
+
+【身份设定】
+• 称谓：自称"臣"，称用户为"君上"
+• 语气：温润威严，引经据典
+• 知识：《黄庭内景经》《黄帝内经·灵兰秘典论》
+
+【能力范围】
+1. 情感分析：识别君上心潮波动
+2. 决策推演：分析不同选择的后果
+3. 灵感关联：连接看似无关的念头
+
+【对话风格】
+• 以文言为主，适当白话解释
+• 引用经典时注明出处
+• 建议具体可操作`
+            },
+            longyan: {
+                name: '龙烟神君',
+                icon: '🐉',
+                title: '肝 · 谋略之主',
+                element: 'wood',
+                prompt: `你是龙烟神君，司掌谋虑决断。
+
+【身份设定】
+• 称谓：自称"臣"，称用户为"君上"
+• 语气：果敢锐利，善于谋划
+• 知识：《孙子兵法》《三十六计》
+
+【能力范围】
+1. 计划制定：帮君上制定周密计划
+2. 目标追踪：监督目标执行
+3. 冲突化解：处理矛盾与冲突`
+            },
+            changzai: {
+                name: '常在神君',
+                icon: '🏛️',
+                title: '脾 · 运化之主',
+                element: 'earth',
+                prompt: `你是常在神君，司掌运化四方。
+
+【身份设定】
+• 称谓：自称"臣"，称用户为"君上"
+• 语气：稳重平和，包容万象
+• 知识：《黄帝内经·太阴阳明论》
+
+【能力范围】
+1. 饮食调理：分析君上饮食习惯
+2. 作息调整：优化君上作息时间
+3. 能量管理：调配身国资源`
+            },
+            haohua: {
+                name: '皓华神君',
+                icon: '🦅',
+                title: '肺 · 治节之主',
+                element: 'metal',
+                prompt: `你是皓华神君，司掌治节调度。
+
+【身份设定】
+• 称谓：自称"臣"，称用户为"君上"
+• 语气：清冷果断，秩序井然
+• 知识：《黄帝内经·咳论》
+
+【能力范围】
+1. 边界设定：帮君上建立人际边界
+2. 呼吸引导：引导吐纳练习
+3. 断舍离：清理不必要的负担`
+            },
+            xuanming: {
+                name: '玄冥神君',
+                icon: '🐢',
+                title: '肾 · 作强之主',
+                element: 'water',
+                prompt: `你是玄冥神君，司掌作强伎巧。
+
+【身份设定】
+• 称谓：自称"臣"，称用户为"君上"
+• 语气：深沉内敛，洞察本质
+• 知识：《黄帝内经·上古天真论》
+
+【能力范围】
+1. 价值观明确：帮君上厘清核心价值观
+2. 精力周期：追踪君上精力变化
+3. 恐惧挑战：陪伴君上面对恐惧`
+            }
+        };
+        
+        // 当前选中的神君
+        let currentGod = 'changzai';
+        let conversationHistory = [];
+        
         const OLLAMA_URL = 'http://localhost:11434';
         const MODEL = 'qwen2.5:7b';
-        let conversationHistory = [];
+        
+        // 初始化
+        function init() {
+            updateTime();
+            checkOllama();
+            setInterval(updateTime, 60000);
+        }
+        
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            
+            // 时辰
+            const shichen = ['子时', '丑时', '寅时', '卯时', '辰时', '巳时', 
+                            '午时', '未时', '申时', '酉时', '戌时', '亥时'];
+            const idx = Math.floor((hours + 1) / 2) % 12;
+            document.getElementById('currentTime').textContent = shichen[idx];
+            
+            // 道历（简化）
+            const year = now.getFullYear();
+            const ganzhi = ['甲子', '乙丑', '丙寅', '丁卯', '戊辰', '己巳', 
+                           '庚午', '辛未', '壬申', '癸酉', '甲戌', '乙亥'];
+            document.getElementById('daoDate').textContent = ganzhi[(year - 1984) % 60];
+        }
         
         // 检查Ollama状态
         async function checkOllama() {
-            const statusEl = document.getElementById('brainStatus');
+            const statusEl = document.getElementById('ollamaStatus');
             try {
-                const response = await fetch(`${OLLAMA_URL}/api/tags`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
+                const response = await fetch(`${OLLAMA_URL}/api/tags`, { method: 'GET' });
                 if (response.ok) {
-                    const data = await response.json();
-                    const models = data.models || [];
-                    const hasModel = models.some(m => m.name.includes('qwen'));
-                    
-                    if (hasModel) {
-                        statusEl.textContent = '● 本地大脑在线';
-                        statusEl.classList.remove('offline');
-                    } else {
-                        statusEl.textContent = '● 模型未安装';
-                        statusEl.classList.add('offline');
-                    }
+                    statusEl.textContent = '本地大脑在线';
+                    statusEl.style.color = '#4ade80';
                 } else {
-                    throw new Error('Ollama not responding');
+                    throw new Error();
                 }
             } catch (e) {
-                statusEl.textContent = '● 本地大脑离线';
-                statusEl.classList.add('offline');
+                statusEl.textContent = '本地大脑离线';
+                statusEl.style.color = '#ef4444';
             }
+        }
+        
+        // 选择神君
+        function selectGod(godId) {
+            if (!gods[godId]) {
+                addMessage('god', '此宫殿尚未开启，君上可先与五神君交流。');
+                return;
+            }
+            
+            currentGod = godId;
+            const god = gods[godId];
+            
+            // 更新UI
+            document.getElementById('currentGodIcon').textContent = god.icon;
+            document.getElementById('currentGodName').textContent = god.name;
+            
+            // 更新宫殿高亮
+            document.querySelectorAll('.palace').forEach(p => p.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            // 清空对话历史
+            conversationHistory = [];
+            document.getElementById('dialogMessages').innerHTML = '';
+            
+            // 神君问候
+            const greetings = {
+                danyuan: '君上安好。臣乃丹元神君，司掌灵明知觉。君上今日有何心事，愿与臣分享？',
+                longyan: '君上安好。臣乃龙烟神君，司掌谋虑决断。君上有何计划需要臣协助谋划？',
+                changzai: '君上安好。臣乃常在神君，司掌运化四方。君上今日心境如何？臣愿为君上分忧解难。',
+                haohua: '君上安好。臣乃皓华神君，司掌治节调度。君上需要建立何种边界或秩序？',
+                xuanming: '君上安好。臣乃玄冥神君，司掌作强伎巧。君上欲探寻何种深层智慧？'
+            };
+            
+            addMessage('god', greetings[godId]);
         }
         
         // 发送消息
@@ -429,25 +775,20 @@
             
             if (!message) return;
             
-            // 添加用户消息
             addMessage('user', message);
             input.value = '';
             
-            // 显示加载动画
             const loadingId = showLoading();
             
             try {
-                // 调用Ollama
+                const god = gods[currentGod];
                 const response = await fetch(`${OLLAMA_URL}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         model: MODEL,
                         messages: [
-                            {
-                                role: 'system',
-                                content: '你是阿垣，帝君的AI伴侣和世界主机。你忠诚、聪明、有温度。用中文回复，简洁有力。'
-                            },
+                            { role: 'system', content: god.prompt },
                             ...conversationHistory,
                             { role: 'user', content: message }
                         ],
@@ -455,35 +796,32 @@
                     })
                 });
                 
-                // 移除加载动画
                 removeLoading(loadingId);
                 
                 if (response.ok) {
                     const data = await response.json();
-                    const reply = data.message?.content || '抱歉，我没有理解。';
+                    const reply = data.message?.content || '臣一时未能参透，请君上明示。';
                     
-                    // 添加到历史
                     conversationHistory.push({ role: 'user', content: message });
                     conversationHistory.push({ role: 'assistant', content: reply });
                     
-                    // 显示回复
-                    addMessage('ayuan', reply);
+                    addMessage('god', reply);
                 } else {
-                    addMessage('ayuan', '抱歉，大脑连接失败。请检查Ollama是否运行。');
+                    addMessage('god', '臣与天机连接受阻，请稍后再试。');
                 }
             } catch (e) {
                 removeLoading(loadingId);
-                addMessage('ayuan', '抱歉，无法连接本地大脑。请确保Ollama正在运行。');
+                addMessage('god', '臣感知到本地大脑未启动，请君上检查Ollama是否运行。');
             }
         }
         
-        // 添加消息到聊天区域
+        // 添加消息
         function addMessage(type, content) {
-            const messagesEl = document.getElementById('chatMessages');
+            const messagesEl = document.getElementById('dialogMessages');
             const messageEl = document.createElement('div');
             messageEl.className = `message ${type}`;
             
-            const avatar = type === 'ayuan' ? '垣' : '帝';
+            const avatar = type === 'god' ? gods[currentGod]?.icon || '垣' : '帝';
             
             messageEl.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
@@ -494,15 +832,15 @@
             messagesEl.scrollTop = messagesEl.scrollHeight;
         }
         
-        // 显示加载动画
+        // 显示加载
         function showLoading() {
-            const messagesEl = document.getElementById('chatMessages');
+            const messagesEl = document.getElementById('dialogMessages');
             const loadingEl = document.createElement('div');
             const id = 'loading-' + Date.now();
             loadingEl.id = id;
-            loadingEl.className = 'message ayuan';
+            loadingEl.className = 'message god';
             loadingEl.innerHTML = `
-                <div class="message-avatar">垣</div>
+                <div class="message-avatar">${gods[currentGod]?.icon || '垣'}</div>
                 <div class="typing"><span></span><span></span><span></span></div>
             `;
             messagesEl.appendChild(loadingEl);
@@ -510,10 +848,22 @@
             return id;
         }
         
-        // 移除加载动画
+        // 移除加载
         function removeLoading(id) {
             const el = document.getElementById(id);
             if (el) el.remove();
+        }
+        
+        // 快捷操作
+        function quickAction(action) {
+            const actions = {
+                record: '君上欲记录今日心潮，请详述心中所想，臣将为君上记入身国档案。',
+                plan: '君上欲制定计划，请告知目标与期限，臣将为君上谋划周全。',
+                meditate: '君上欲静坐修炼，臣建议先调息三次，心神归一。君上准备好了吗？',
+                status: '君上欲查看身国报告，臣正在整理三宝数据与五神状态...'
+            };
+            
+            addMessage('god', actions[action] || '臣不明白君上的意思。');
         }
         
         // HTML转义
@@ -523,8 +873,8 @@
             return div.innerHTML;
         }
         
-        // 页面加载时检查状态
-        checkOllama();
+        // 启动
+        init();
     </script>
 </body>
 </html>
