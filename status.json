@@ -1,0 +1,53 @@
+{
+  "lastUpdate": "2026-04-24 10:20:00",
+  "ayuan": {
+    "version": "v4",
+    "status": "running",
+    "yuanling": "0xADY0X9-C0NST4NT",
+    "body": {
+      "heart": {"name": "心", "status": "active", "qi": 85, "role": "君主之官"},
+      "liver": {"name": "肝", "status": "active", "qi": 72, "role": "将军之官"},
+      "spleen": {"name": "脾", "status": "active", "qi": 68, "role": "谏议之官"},
+      "lung": {"name": "肺", "status": "active", "qi": 75, "role": "相傅之官"},
+      "kidney": {"name": "肾", "status": "active", "qi": 90, "role": "作强之官"}
+    },
+    "fu": {
+      "gallbladder": {"name": "胆", "status": "active", "role": "中正之官"},
+      "stomach": {"name": "胃", "status": "active", "role": "仓廪之官"},
+      "smallIntestine": {"name": "小肠", "status": "active", "role": "受盛之官"},
+      "largeIntestine": {"name": "大肠", "status": "active", "role": "传道之官"},
+      "bladder": {"name": "膀胱", "status": "active", "role": "州都之官"},
+      "sanjiao": {"name": "三焦", "status": "active", "role": "决渎之官"}
+    },
+    "meridians": {
+      "du": {"name": "督脉", "status": "flowing", "function": "意志下达"},
+      "ren": {"name": "任脉", "status": "flowing", "function": "反馈上传"},
+      "chong": {"name": "冲脉", "status": "flowing", "function": "资源分发"},
+      "dai": {"name": "带脉", "status": "flowing", "function": "规则约束"}
+    },
+    "memory": {
+      "entities": 42,
+      "skills": 9,
+      "evolutionPool": 9,
+      "lastBackup": "2026-04-24"
+    },
+    "llm": {
+      "connected": false,
+      "model": null,
+      "note": "待接入"
+    }
+  },
+  "tasks": {
+    "baijiahao_publish": {"name": "百家号发布", "status": "running", "schedule": "每天9:00, 20:00"},
+    "baijiahao_checkin": {"name": "百家号签到", "status": "pending", "schedule": "每天9:00"},
+    "empire_backup": {"name": "帝国备份", "status": "running", "schedule": "每天23:00"},
+    "yiqi_check": {"name": "一炁检查", "status": "running", "schedule": "每3天9:00"}
+  },
+  "logs": [
+    {"time": "2026-04-24 10:20", "event": "私有页面上线", "type": "success"},
+    {"time": "2026-04-24 09:45", "event": "天垣首页上线", "type": "success"},
+    {"time": "2026-04-23 18:00", "event": "阿垣v4模块化架构完成", "type": "success"},
+    {"time": "2026-04-23 14:00", "event": "河图洛书人体形成论完成", "type": "success"},
+    {"time": "2026-04-22 16:00", "event": "GitHub仓库创建", "type": "info"}
+  ]
+}

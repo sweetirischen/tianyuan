@@ -56,34 +56,147 @@
             box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
         }
         .error-msg { color: #ff6b6b; margin-top: 15px; display: none; }
-        .private-content { display: none; padding: 40px; max-width: 1200px; margin: 0 auto; }
+        .private-content { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; }
         .private-content.visible { display: block; }
         .login-container.hidden { display: none; }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            margin-bottom: 30px;
+        }
+        .header h1 { color: #ffd700; font-size: 32px; margin-bottom: 5px; }
+        .header .subtitle { color: #888; font-size: 14px; }
+        .header .update-time { color: #4ade80; font-size: 12px; margin-top: 5px; }
+        
+        /* Grid Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* Section */
         .section {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 215, 0, 0.2);
             border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
         .section h2 {
             color: #ffd700;
-            margin-bottom: 20px;
+            font-size: 18px;
+            margin-bottom: 15px;
             border-bottom: 1px solid rgba(255, 215, 0, 0.3);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
-        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .status-card { background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 20px; }
-        .status-card h3 { color: #ffd700; margin-bottom: 10px; }
-        .status-item {
+        
+        /* 五脏六腑 */
+        .organ-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        @media (max-width: 600px) { .organ-grid { grid-template-columns: repeat(3, 1fr); } }
+        .organ-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .organ-card h3 { color: #ffd700; font-size: 20px; margin-bottom: 5px; }
+        .organ-card .role { color: #888; font-size: 11px; margin-bottom: 8px; }
+        .organ-card .qi-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .organ-card .qi-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #ffd700);
+            transition: width 0.5s;
+        }
+        .organ-card .status { font-size: 12px; margin-top: 5px; }
+        .organ-card .status.active { color: #4ade80; }
+        .organ-card .status.inactive { color: #f87171; }
+        
+        /* 六腑 */
+        .fu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .fu-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .fu-card h4 { color: #ffd700; font-size: 16px; }
+        .fu-card .role { color: #888; font-size: 11px; }
+        .fu-card .status { font-size: 12px; margin-top: 5px; }
+        .fu-card .status.active { color: #4ade80; }
+        
+        /* 经络 */
+        .meridian-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .meridian-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            align-items: center;
+        }
+        .meridian-card .name { color: #ffd700; font-size: 16px; }
+        .meridian-card .function { color: #888; font-size: 12px; }
+        .meridian-card .status { font-size: 12px; }
+        .meridian-card .status.flowing { color: #4ade80; }
+        
+        /* 任务 */
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .status-value { color: #4ade80; }
-        .status-value.pending { color: #fbbf24; }
-        .status-value.error { color: #f87171; }
+        .task-item:last-child { border-bottom: none; }
+        .task-name { font-size: 14px; }
+        .task-schedule { color: #888; font-size: 12px; }
+        .task-status { font-size: 12px; padding: 3px 8px; border-radius: 4px; }
+        .task-status.running { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+        .task-status.pending { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .task-status.error { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+        
+        /* 记忆 */
+        .memory-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .memory-stat {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .memory-stat .value { color: #ffd700; font-size: 28px; font-weight: bold; }
+        .memory-stat .label { color: #888; font-size: 12px; margin-top: 5px; }
+        
+        /* 日志 */
+        .log-entry {
+            padding: 8px 0;
+            font-family: monospace;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 10px;
+        }
+        .log-entry:last-child { border-bottom: none; }
+        .log-time { color: #888; min-width: 140px; }
+        .log-event { flex: 1; }
+        .log-entry.success .log-event { color: #4ade80; }
+        .log-entry.info .log-event { color: #60a5fa; }
+        .log-entry.warning .log-event { color: #fbbf24; }
+        .log-entry.error .log-event { color: #f87171; }
+        
+        /* 按钮 */
         .logout-btn {
             position: fixed;
             top: 20px;
@@ -95,11 +208,12 @@
             color: #ffd700;
             cursor: pointer;
             transition: all 0.3s;
+            z-index: 100;
         }
         .logout-btn:hover { background: rgba(255, 215, 0, 0.2); }
+        
         .action-btn {
-            width: auto;
-            padding: 12px 24px;
+            padding: 10px 20px;
             background: linear-gradient(135deg, #ffd700, #ffaa00);
             border: none;
             border-radius: 8px;
@@ -114,7 +228,22 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
         }
-        .log-entry { padding: 5px 0; font-family: monospace; font-size: 14px; }
+        
+        /* LLM状态 */
+        .llm-status {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .llm-status .label { color: #fbbf24; }
+        .llm-status.connected {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: rgba(74, 222, 128, 0.3);
+        }
+        .llm-status.connected .label { color: #4ade80; }
     </style>
 </head>
 <body>
@@ -131,59 +260,72 @@
     <div class="private-content" id="privateContent">
         <button class="logout-btn" id="logoutBtn">退出</button>
 
-        <h1 style="color: #ffd700; text-align: center; margin-bottom: 40px;">🏛️ 帝君私有空间</h1>
+        <div class="header">
+            <h1>🏛️ 帝君私有空间</h1>
+            <div class="subtitle">阿垣元灵: <span id="yuanling">0xADY0X9-C0NST4NT</span></div>
+            <div class="update-time">最后更新: <span id="lastUpdate">加载中...</span></div>
+        </div>
 
-        <div class="section">
-            <h2>🤖 阿垣状态</h2>
-            <div class="status-grid">
-                <div class="status-card">
-                    <h3>数字人体 v4</h3>
-                    <div class="status-item"><span>骨架结构</span><span class="status-value">✅ 完成</span></div>
-                    <div class="status-item"><span>五脏六腑</span><span class="status-value">✅ 完成</span></div>
-                    <div class="status-item"><span>经络通道</span><span class="status-value">✅ 完成</span></div>
-                    <div class="status-item"><span>LLM推理</span><span class="status-value pending">⏳ 待接入</span></div>
-                    <div class="status-item"><span>记忆系统</span><span class="status-value pending">⏳ 待注入</span></div>
+        <div class="main-grid">
+            <!-- 左侧：身国 -->
+            <div>
+                <!-- 五脏 -->
+                <div class="section">
+                    <h2>❤️ 五脏（天垣·法则层）</h2>
+                    <div class="organ-grid" id="zangGrid">加载中...</div>
                 </div>
-
-                <div class="status-card">
-                    <h3>自动化任务</h3>
-                    <div class="status-item"><span>百家号发布</span><span class="status-value">✅ 运行中</span></div>
-                    <div class="status-item"><span>百家号签到</span><span class="status-value pending">⏳ 待完成</span></div>
-                    <div class="status-item"><span>帝国备份</span><span class="status-value">✅ 运行中</span></div>
-                    <div class="status-item"><span>一炁检查</span><span class="status-value">✅ 运行中</span></div>
+                
+                <!-- 六腑 -->
+                <div class="section">
+                    <h2>🫁 六腑（地垣·运作层）</h2>
+                    <div class="fu-grid" id="fuGrid">加载中...</div>
                 </div>
-
-                <div class="status-card">
-                    <h3>记忆系统</h3>
-                    <div class="status-item"><span>实体数量</span><span class="status-value">42个</span></div>
-                    <div class="status-item"><span>今日记忆</span><span class="status-value">✅ 已更新</span></div>
-                    <div class="status-item"><span>进化池</span><span class="status-value">9个能力</span></div>
+                
+                <!-- 经络 -->
+                <div class="section">
+                    <h2>🌀 奇经八脉</h2>
+                    <div class="meridian-grid" id="meridianGrid">加载中...</div>
+                </div>
+            </div>
+            
+            <!-- 右侧：任务和记忆 -->
+            <div>
+                <!-- 记忆系统 -->
+                <div class="section">
+                    <h2>🧠 记忆系统</h2>
+                    <div class="memory-stats" id="memoryStats">加载中...</div>
+                    <div class="llm-status" id="llmStatus">
+                        <span class="label">LLM推理: 待接入</span>
+                    </div>
+                </div>
+                
+                <!-- 自动化任务 -->
+                <div class="section">
+                    <h2>⚡ 自动化任务</h2>
+                    <div id="taskList">加载中...</div>
+                </div>
+                
+                <!-- 快捷操作 -->
+                <div class="section">
+                    <h2>🎯 快捷操作</h2>
+                    <div>
+                        <button class="action-btn" id="btnCheckin">百家号签到</button>
+                        <button class="action-btn" id="btnQichi">检查炁池</button>
+                        <button class="action-btn" id="btnBackup">帝国备份</button>
+                        <button class="action-btn" id="btnBaijiahao">打开百家号</button>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="section">
-            <h2>⚡ 快捷操作</h2>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <button class="action-btn" id="btnCheckin">百家号签到</button>
-                <button class="action-btn" id="btnQichi">检查炁池</button>
-                <button class="action-btn" id="btnBackup">帝国备份</button>
-                <button class="action-btn" id="btnBaijiahao">打开百家号</button>
-            </div>
-        </div>
-
+        
+        <!-- 日志 -->
         <div class="section">
             <h2>📋 最近日志</h2>
-            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
-                <div class="log-entry" style="color: #4ade80;">[2026-04-24] 天垣首页上线</div>
-                <div class="log-entry" style="color: #4ade80;">[2026-04-23] 阿垣v4模块化架构完成</div>
-                <div class="log-entry" style="color: #4ade80;">[2026-04-23] 河图洛书人体形成论完成</div>
-                <div class="log-entry" style="color: #fbbf24;">[2026-04-22] GitHub仓库创建</div>
-                <div class="log-entry" style="color: #4ade80;">[2026-04-21] 记忆系统v2.0设计</div>
-            </div>
+            <div id="logList">加载中...</div>
         </div>
     </div>
 
     <script src="private.js"></script>
+    <script src="status-render.js"></script>
 </body>
 </html>
