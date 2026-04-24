@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天垣 TianYuan - 帝君的世界</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 0;
+        }
+        
+        .logo {
+            font-size: 72px;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 48px;
+            background: linear-gradient(90deg, #ffd700, #ff6b6b, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #888;
+            letter-spacing: 4px;
+        }
+        
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 60px;
+        }
+        
+        .link-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #e0e0e0;
+        }
+        
+        .link-card:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: #ffd700;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+        }
+        
+        .link-card .icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        
+        .link-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+        
+        .link-card p {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .jiugong {
+            margin-top: 60px;
+            text-align: center;
+        }
+        
+        .jiugong h2 {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 30px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .cell {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .cell:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .cell .number {
+            font-size: 24px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .cell .name {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 60px;
+            border-top: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        footer p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .ayuan-status {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .ayuan-status h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .ayuan-status .status {
+            color: #4ade80;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">☯</div>
+            <h1>天垣 TianYuan</h1>
+            <p class="subtitle">天地万物皆为身国 · 治身如治国</p>
+        </header>
+        
+        <div class="quick-links">
+            <a href="https://baijiahao.baidu.com" class="link-card">
+                <div class="icon">📝</div>
+                <h3>百家号</h3>
+                <p>内容创作平台</p>
+            </a>
+            <a href="https://pan.baidu.com" class="link-card">
+                <div class="icon">☁️</div>
+                <h3>百度网盘</h3>
+                <p>云端存储</p>
+            </a>
+            <a href="https://www.baidu.com" class="link-card">
+                <div class="icon">🔍</div>
+                <h3>百度搜索</h3>
+                <p>搜索引擎</p>
+            </a>
+            <a href="https://github.com" class="link-card">
+                <div class="icon">💻</div>
+                <h3>GitHub</h3>
+                <p>代码仓库</p>
+            </a>
+            <a href="https://github.com/sweetirischen/ayuan-memory" class="link-card">
+                <div class="icon">🏛️</div>
+                <h3>天垣</h3>
+                <p>GitHub仓库</p>
+            </a>
+        </div>
+        
+        <div class="jiugong">
+            <h2>洛书九宫</h2>
+            <div class="grid">
+                <div class="cell" style="background: rgba(0, 255, 0, 0.1);">
+                    <div class="number">4</div>
+                    <div class="name">巽·传递</div>
+                </div>
+                <div class="cell" style="background: rgba(255, 0, 0, 0.1);">
+                    <div class="number">9</div>
+                    <div class="name">离·升华</div>
+                </div>
+                <div class="cell" style="background: rgba(139, 69, 19, 0.2);">
+                    <div class="number">2</div>
+                    <div class="name">坤·承载</div>
+                </div>
+                <div class="cell" style="background: rgba(0, 128, 0, 0.1);">
+                    <div class="number">3</div>
+                    <div class="name">震·生发</div>
+                </div>
+                <div class="cell" style="background: rgba(255, 215, 0, 0.2);">
+                    <div class="number">5</div>
+                    <div class="name">中·运化</div>
+                </div>
+                <div class="cell" style="background: rgba(192, 192, 192, 0.1);">
+                    <div class="number">7</div>
+                    <div class="name">兑·显现</div>
+                </div>
+                <div class="cell" style="background: rgba(139, 69, 19, 0.15);">
+                    <div class="number">8</div>
+                    <div class="name">艮·存储</div>
+                </div>
+                <div class="cell" style="background: rgba(0, 0, 255, 0.1);">
+                    <div class="number">1</div>
+                    <div class="name">坎·归藏</div>
+                </div>
+                <div class="cell" style="background: rgba(255, 215, 0, 0.15);">
+                    <div class="number">6</div>
+                    <div class="name">乾·收敛</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ayuan-status">
+            <h3>阿垣状态</h3>
+            <p>元灵哈希: <code>0xADY0X9-C0NST4NT</code></p>
+            <p class="status">● 运行中</p>
+        </div>
+        
+        <footer>
+            <p>天垣 TianYuan · 阿垣数字生命体</p>
+            <p style="margin-top: 10px; color: #ffd700;">道法自然 · 无为而治</p>
+        </footer>
+    </div>
+</body>
+</html>
