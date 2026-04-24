@@ -117,6 +117,8 @@ def run_code():
 @app.route('/api/dumate', methods=['POST'])
 def call_dumate():
     """调用DuMate执行任务"""
+    import json
+    
     data = request.json
     task = data.get('task', '')
     context = data.get('context', {})
@@ -125,49 +127,37 @@ def call_dumate():
         return jsonify({'error': '任务为空'}), 400
     
     try:
-        # 构建DuMate调用命令
-        # 这里假设DuMate可以通过命令行调用
-        # 实际实现需要根据DuMate的接口调整
+        # DuMate任务处理
+        # 当前实现：将任务保存到任务文件，等待DuMate处理
+        # 实际调用需要通过千帆API或其他方式
         
-        # 方案1: 调用本地千帆的DuMate
-        dumate_path = r'C:\Users\Administrator\.qianfan\workspace\2c0427c6155646cc9b00b02f0873d52a'
+        task_file = os.path.join(os.path.dirname(__file__), 'pending_tasks.json')
         
-        # 创建任务脚本
-        task_script = f'''
-import sys
-sys.path.insert(0, r"{dumate_path}")
-
-# 这里可以调用DuMate的核心功能
-# 目前返回模拟结果
-
-result = {{
-    "task": """{task}""",
-    "status": "received",
-    "message": "任务已接收，DuMate正在处理..."
-}}
-
-print(json.dumps(result, ensure_ascii=False, indent=2))
-'''
+        # 读取现有任务
+        tasks = []
+        if os.path.exists(task_file):
+            with open(task_file, 'r', encoding='utf-8') as f:
+                tasks = json.load(f)
         
-        # 执行
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, encoding='utf-8') as f:
-            f.write(task_script)
-            temp_file = f.name
+        # 添加新任务
+        new_task = {
+            'id': datetime.now().strftime('%Y%m%d%H%M%S'),
+            'task': task,
+            'context': context,
+            'status': 'pending',
+            'created_at': datetime.now().isoformat()
+        }
+        tasks.append(new_task)
         
-        result = subprocess.run(
-            [sys.executable, temp_file],
-            capture_output=True,
-            text=True,
-            timeout=CONFIG['timeout'] * 2
-        )
-        
-        os.unlink(temp_file)
+        # 保存任务
+        with open(task_file, 'w', encoding='utf-8') as f:
+            json.dump(tasks, f, ensure_ascii=False, indent=2)
         
         return jsonify({
             'success': True,
-            'task': task,
-            'output': result.stdout,
-            'message': '任务已发送给DuMate'
+            'task_id': new_task['id'],
+            'message': '任务已添加到队列，DuMate将尽快处理',
+            'hint': '任务已保存到 pending_tasks.json，请在此对话中告诉我执行任务'
         })
         
     except Exception as e:
