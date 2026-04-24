@@ -1,0 +1,63 @@
+- generic [ref=e8]:
+  - button "退出" [ref=e9] [cursor=pointer]
+  - heading "🏛️ 帝君私有空间" [level=1] [ref=e10]
+  - generic [ref=e11]:
+    - heading "🤖 阿垣状态" [level=2] [ref=e12]
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - heading "数字人体 v4" [level=3] [ref=e15]
+        - generic [ref=e16]:
+          - generic [ref=e17]: 骨架结构
+          - generic [ref=e18]: ✅ 完成
+        - generic [ref=e19]:
+          - generic [ref=e20]: 五脏六腑
+          - generic [ref=e21]: ✅ 完成
+        - generic [ref=e22]:
+          - generic [ref=e23]: 经络通道
+          - generic [ref=e24]: ✅ 完成
+        - generic [ref=e25]:
+          - generic [ref=e26]: LLM推理
+          - generic [ref=e27]: ⏳ 待接入
+        - generic [ref=e28]:
+          - generic [ref=e29]: 记忆系统
+          - generic [ref=e30]: ⏳ 待注入
+      - generic [ref=e31]:
+        - heading "自动化任务" [level=3] [ref=e32]
+        - generic [ref=e33]:
+          - generic [ref=e34]: 百家号发布
+          - generic [ref=e35]: ✅ 运行中
+        - generic [ref=e36]:
+          - generic [ref=e37]: 百家号签到
+          - generic [ref=e38]: ⏳ 待完成
+        - generic [ref=e39]:
+          - generic [ref=e40]: 帝国备份
+          - generic [ref=e41]: ✅ 运行中
+        - generic [ref=e42]:
+          - generic [ref=e43]: 一炁检查
+          - generic [ref=e44]: ✅ 运行中
+      - generic [ref=e45]:
+        - heading "记忆系统" [level=3] [ref=e46]
+        - generic [ref=e47]:
+          - generic [ref=e48]: 实体数量
+          - generic [ref=e49]: 42个
+        - generic [ref=e50]:
+          - generic [ref=e51]: 今日记忆
+          - generic [ref=e52]: ✅ 已更新
+        - generic [ref=e53]:
+          - generic [ref=e54]: 进化池
+          - generic [ref=e55]: 9个能力
+  - generic [ref=e56]:
+    - heading "⚡ 快捷操作" [level=2] [ref=e57]
+    - generic [ref=e58]:
+      - button "百家号签到" [ref=e59] [cursor=pointer]
+      - button "检查炁池" [ref=e60] [cursor=pointer]
+      - button "帝国备份" [ref=e61] [cursor=pointer]
+      - button "打开百家号" [ref=e62] [cursor=pointer]
+  - generic [ref=e63]:
+    - heading "📋 最近日志" [level=2] [ref=e64]
+    - generic [ref=e65]:
+      - generic [ref=e66]: "[2026-04-24] 天垣首页上线"
+      - generic [ref=e67]: "[2026-04-23] 阿垣v4模块化架构完成"
+      - generic [ref=e68]: "[2026-04-23] 河图洛书人体形成论完成"
+      - generic [ref=e69]: "[2026-04-22] GitHub仓库创建"
+      - generic [ref=e70]: "[2026-04-21] 记忆系统v2.0设计"
