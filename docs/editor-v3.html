@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身国编辑器 · 天圆地方 · 智能体</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* 顶部工具栏 */
+        .toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(20, 20, 30, 0.95);
+            border-bottom: 1px solid #c9a227;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .toolbar h1 {
+            font-size: 20px;
+            color: #c9a227;
+            margin-right: 40px;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: 1px solid #c9a227;
+            color: #c9a227;
+            padding: 8px 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .toolbar-btn:hover {
+            background: #c9a227;
+            color: #0a0a0a;
+        }
+
+        /* 主容器 */
+        .main-container {
+            display: flex;
+            padding-top: 60px;
+            min-height: 100vh;
+        }
+
+        /* 左侧时间轴 */
+        .timeline {
+            width: 100px;
+            background: rgba(20, 20, 30, 0.9);
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 10px 5px;
+            overflow-y: auto;
+            max-height: calc(100vh - 60px);
+        }
+
+        .timeline-label {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .timeline-item {
+            width: 90px;
+            min-height: 80px;
+            margin: 3px auto;
+            border: 1px solid #444;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(30, 30, 40, 0.8);
+            padding: 8px;
+        }
+
+        .timeline-item:hover {
+            border-color: #c9a227;
+            background: rgba(201, 162, 39, 0.1);
+        }
+
+        .timeline-item.active {
+            border-color: #c9a227;
+            background: rgba(201, 162, 39, 0.2);
+            box-shadow: 0 0 15px rgba(201, 162, 39, 0.3);
+        }
+
+        .timeline-item .num {
+            font-size: 20px;
+            font-weight: bold;
+            color: #c9a227;
+            text-align: center;
+        }
+
+        .timeline-item .name {
+            font-size: 11px;
+            color: #888;
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        /* 智能体标签 */
+        .agent-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            margin-top: 5px;
+            justify-content: center;
+        }
+
+        .agent-tag {
+            font-size: 9px;
+            background: rgba(201, 162, 39, 0.3);
+            color: #c9a227;
+            padding: 2px 4px;
+            border-radius: 3px;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* 中央编辑区 */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        /* 天圆地方容器 */
+        .tianyuan-difang {
+            position: relative;
+            width: 550px;
+            height: 550px;
+        }
+
+        /* 外圆 - 天 - 0 */
+        .outer-circle {
+            position: absolute;
+            width: 550px;
+            height: 550px;
+            border-radius: 50%;
+            border: 3px solid #c9a227;
+            background: radial-gradient(circle, rgba(201, 162, 39, 0.05) 0%, transparent 70%);
+            box-shadow: 0 0 30px rgba(201, 162, 39, 0.2), inset 0 0 50px rgba(201, 162, 39, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .outer-circle:hover {
+            background: radial-gradient(circle, rgba(201, 162, 39, 0.1) 0%, transparent 70%);
+        }
+
+        .outer-circle.selected {
+            border-width: 4px;
+            box-shadow: 0 0 40px rgba(201, 162, 39, 0.4), inset 0 0 60px rgba(201, 162, 39, 0.2);
+        }
+
+        .outer-circle::before {
+            content: '0 · 混沌 · 天圆';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #c9a227;
+            letter-spacing: 4px;
+        }
+
+        /* 外圆智能体显示 */
+        .circle-agents {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            text-align: center;
+        }
+
+        /* 内方 - 地 - 九宫 */
+        .inner-square {
+            position: absolute;
+            width: 360px;
+            height: 360px;
+            left: 95px;
+            top: 95px;
+            background: rgba(20, 20, 30, 0.9);
+            border: 2px solid #c9a227;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+        }
+
+        /* 九宫格子 */
+        .palace {
+            border: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            padding: 8px;
+        }
+
+        .palace:hover {
+            background: rgba(201, 162, 39, 0.15);
+            border-color: #c9a227;
+        }
+
+        .palace.selected {
+            background: rgba(201, 162, 39, 0.25);
+            border-color: #c9a227;
+            box-shadow: inset 0 0 20px rgba(201, 162, 39, 0.3);
+        }
+
+        .palace .num {
+            font-size: 24px;
+            font-weight: bold;
+            color: #c9a227;
+        }
+
+        .palace .name {
+            font-size: 14px;
+            color: #e0e0e0;
+            margin-top: 2px;
+        }
+
+        .palace .wuxing {
+            font-size: 10px;
+            color: #888;
+        }
+
+        /* 宫内智能体标签 */
+        .palace .palace-agents {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            margin-top: 5px;
+            justify-content: center;
+            max-height: 60px;
+            overflow: hidden;
+        }
+
+        .palace .agent-tag {
+            font-size: 8px;
+        }
+
+        /* 九宫颜色 */
+        .palace-1 { background: rgba(30, 60, 80, 0.3); }
+        .palace-2 { background: rgba(80, 70, 40, 0.3); }
+        .palace-3 { background: rgba(40, 80, 40, 0.3); }
+        .palace-4 { background: rgba(50, 90, 50, 0.3); }
+        .palace-5 { background: rgba(90, 80, 40, 0.3); }
+        .palace-6 { background: rgba(80, 80, 60, 0.3); }
+        .palace-7 { background: rgba(80, 80, 70, 0.3); }
+        .palace-8 { background: rgba(80, 70, 50, 0.3); }
+        .palace-9 { background: rgba(100, 50, 40, 0.3); }
+
+        /* 右侧属性面板 */
+        .property-panel {
+            width: 350px;
+            background: rgba(20, 20, 30, 0.95);
+            border-left: 1px solid #333;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: calc(100vh - 60px);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            color: #c9a227;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-section {
+            margin-bottom: 15px;
+        }
+
+        .panel-section h3 {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .panel-input {
+            width: 100%;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .panel-input:focus {
+            outline: none;
+            border-color: #c9a227;
+        }
+
+        .panel-textarea {
+            width: 100%;
+            min-height: 60px;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 8px;
+            border-radius: 4px;
+            resize: vertical;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .panel-textarea:focus {
+            outline: none;
+            border-color: #c9a227;
+        }
+
+        /* 智能体列表 */
+        .agent-list {
+            margin-bottom: 15px;
+        }
+
+        .agent-item {
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .agent-item:hover {
+            border-color: #c9a227;
+            background: rgba(201, 162, 39, 0.1);
+        }
+
+        .agent-item.selected {
+            border-color: #c9a227;
+            background: rgba(201, 162, 39, 0.15);
+        }
+
+        .agent-item .agent-name {
+            font-size: 14px;
+            color: #c9a227;
+            font-weight: bold;
+        }
+
+        .agent-item .agent-role {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .agent-item .agent-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .agent-item .agent-btn {
+            font-size: 10px;
+            padding: 3px 8px;
+            background: transparent;
+            border: 1px solid #666;
+            color: #888;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .agent-item .agent-btn:hover {
+            border-color: #c9a227;
+            color: #c9a227;
+        }
+
+        .agent-item .agent-btn.delete:hover {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        /* 添加按钮 */
+        .add-btn {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: 1px dashed #c9a227;
+            color: #c9a227;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .add-btn:hover {
+            background: rgba(201, 162, 39, 0.1);
+        }
+
+        /* 信息展示 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .info-item {
+            background: rgba(30, 30, 40, 0.5);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .info-item label {
+            font-size: 10px;
+            color: #888;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .info-item span {
+            font-size: 13px;
+            color: #c9a227;
+        }
+
+        /* 底部状态栏 */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: rgba(20, 20, 30, 0.95);
+            border-top: 1px solid #333;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .status-bar span {
+            margin-right: 20px;
+        }
+
+        .status-bar .highlight {
+            color: #c9a227;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 30, 0.98);
+            border: 1px solid #c9a227;
+            border-radius: 10px;
+            padding: 20px;
+            width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .modal-header h2 {
+            color: #c9a227;
+            font-size: 18px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #c9a227;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+        }
+
+        .modal-btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .modal-btn.primary {
+            background: #c9a227;
+            border: none;
+            color: #0a0a0a;
+        }
+
+        .modal-btn.secondary {
+            background: transparent;
+            border: 1px solid #666;
+            color: #888;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* 标签样式 */
+        .tag-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .tag-option {
+            padding: 4px 10px;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #444;
+            border-radius: 15px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tag-option:hover {
+            border-color: #c9a227;
+        }
+
+        .tag-option.selected {
+            background: rgba(201, 162, 39, 0.2);
+            border-color: #c9a227;
+            color: #c9a227;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部工具栏 -->
+    <div class="toolbar">
+        <h1>身国编辑器 · 智能体</h1>
+        <button class="toolbar-btn" onclick="saveAllData()">保存</button>
+        <button class="toolbar-btn" onclick="exportJSON()">导出JSON</button>
+        <button class="toolbar-btn" onclick="importJSON()">导入</button>
+        <button class="toolbar-btn" onclick="clearAll()">清空</button>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 左侧时间轴 -->
+        <div class="timeline" id="timeline">
+            <div class="timeline-label">时间轴</div>
+            <!-- 由JS生成 -->
+        </div>
+
+        <!-- 中央编辑区 -->
+        <div class="editor-area">
+            <div class="tianyuan-difang">
+                <!-- 外圆 - 天 - 0 -->
+                <div class="outer-circle" id="circle-0" onclick="selectPalace(0)">
+                    <div class="circle-agents" id="circle-agents"></div>
+                </div>
+                
+                <!-- 内方 - 地 - 九宫 -->
+                <div class="inner-square" id="inner-square">
+                    <!-- 由JS生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧属性面板 -->
+        <div class="property-panel">
+            <div class="panel-title">
+                <span>智能体管理</span>
+                <span id="cell-info">-</span>
+            </div>
+
+            <!-- 当前选中信息 -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>时间层</label>
+                    <span id="info-time">0·混沌</span>
+                </div>
+                <div class="info-item">
+                    <label>宫位</label>
+                    <span id="info-palace">外圆·天</span>
+                </div>
+            </div>
+
+            <!-- 智能体列表 -->
+            <div class="panel-section">
+                <h3>智能体列表</h3>
+                <div class="agent-list" id="agent-list">
+                    <!-- 由JS生成 -->
+                </div>
+                <button class="add-btn" onclick="showAddAgentModal()">+ 添加智能体</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部状态栏 -->
+    <div class="status-bar">
+        <span>总计: <span class="highlight" id="total-agents">0</span> 个智能体</span>
+        <span>宇宙平衡数: <span class="highlight">15</span></span>
+    </div>
+
+    <!-- 添加/编辑智能体模态框 -->
+    <div class="modal" id="agent-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">添加智能体</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <div class="panel-section">
+                <h3>基本信息</h3>
+                <input type="text" class="panel-input" id="agent-name" placeholder="智能体名称 *">
+                <input type="text" class="panel-input" id="agent-role" placeholder="角色定位">
+                <textarea class="panel-textarea" id="agent-goal" placeholder="目标：要完成什么任务"></textarea>
+            </div>
+
+            <div class="panel-section">
+                <h3>能力配置</h3>
+                <textarea class="panel-textarea" id="agent-skills" placeholder="能力：具备哪些技能（逗号分隔）"></textarea>
+                <textarea class="panel-textarea" id="agent-tools" placeholder="工具：可调用的工具（逗号分隔）"></textarea>
+                <input type="text" class="panel-input" id="agent-knowledge" placeholder="知识库：关联的知识来源">
+            </div>
+
+            <div class="panel-section">
+                <h3>模型配置</h3>
+                <div class="tag-select" id="model-select">
+                    <span class="tag-option" data-model="qwen2.5:7b" onclick="selectModel(this)">qwen2.5:7b</span>
+                    <span class="tag-option" data-model="gpt-4" onclick="selectModel(this)">GPT-4</span>
+                    <span class="tag-option" data-model="claude-3" onclick="selectModel(this)">Claude-3</span>
+                    <span class="tag-option" data-model="deepseek" onclick="selectModel(this)">DeepSeek</span>
+                </div>
+                <input type="hidden" id="agent-model" value="">
+            </div>
+
+            <div class="panel-section">
+                <h3>输入输出</h3>
+                <input type="text" class="panel-input" id="agent-input" placeholder="输入：接收什么输入">
+                <input type="text" class="panel-input" id="agent-output" placeholder="输出：产生什么输出">
+            </div>
+
+            <div class="panel-section">
+                <h3>系统提示词</h3>
+                <textarea class="panel-textarea" id="agent-prompt" placeholder="System Prompt：智能体的核心指令" style="min-height: 100px;"></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeModal()">取消</button>
+                <button class="modal-btn primary" onclick="saveAgent()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 九宫数据
+        const palaceData = {
+            0: { name: '混沌', wuxing: '-', meaning: '天圆' },
+            1: { name: '坎', wuxing: '水', meaning: '起源' },
+            2: { name: '坤', wuxing: '土', meaning: '承载' },
+            3: { name: '震', wuxing: '木', meaning: '生发' },
+            4: { name: '巽', wuxing: '木', meaning: '运化' },
+            5: { name: '中', wuxing: '土', meaning: '核心' },
+            6: { name: '乾', wuxing: '金', meaning: '收敛' },
+            7: { name: '兑', wuxing: '金', meaning: '显现' },
+            8: { name: '艮', wuxing: '土', meaning: '存储' },
+            9: { name: '离', wuxing: '火', meaning: '升华' }
+        };
+
+        // 时间层名称
+        const timeNames = {
+            0: '混沌', 1: '起源', 2: '承载', 3: '生发', 4: '运化',
+            5: '核心', 6: '收敛', 7: '显现', 8: '存储', 9: '升华'
+        };
+
+        // 洛书布局顺序
+        const luoshuOrder = [4, 9, 2, 3, 5, 7, 8, 1, 6];
+
+        // 当前状态
+        let currentTime = 0;
+        let currentPalace = 0;
+        let editingAgentId = null;
+
+        // 数据存储: { "time-palace": [agent1, agent2, ...] }
+        let agentsData = {};
+
+        // 初始化
+        function init() {
+            loadData();
+            renderTimeline();
+            renderPalaces();
+            updateDisplay();
+        }
+
+        // 渲染时间轴
+        function renderTimeline() {
+            const container = document.getElementById('timeline');
+            let html = '<div class="timeline-label">时间轴</div>';
+            
+            for (let t = 0; t <= 9; t++) {
+                const agents = getAgentsInTime(t);
+                const agentTags = agents.length > 0 
+                    ? agents.slice(0, 3).map(a => `<span class="agent-tag">${a.name}</span>`).join('') 
+                    : '';
+                
+                html += `
+                    <div class="timeline-item ${t === currentTime ? 'active' : ''}" data-time="${t}" onclick="selectTime(${t})">
+                        <div class="num">${t}</div>
+                        <div class="name">${timeNames[t]}</div>
+                        <div class="agent-tags">${agentTags}</div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // 渲染九宫
+        function renderPalaces() {
+            const container = document.getElementById('inner-square');
+            let html = '';
+            
+            luoshuOrder.forEach(p => {
+                const agents = getAgentsInCell(currentTime, p);
+                const agentTags = agents.length > 0 
+                    ? agents.slice(0, 4).map(a => `<span class="agent-tag">${a.name}</span>`).join('') 
+                    : '';
+                
+                html += `
+                    <div class="palace palace-${p} ${p === currentPalace ? 'selected' : ''}" data-palace="${p}" onclick="selectPalace(${p})">
+                        <span class="num">${p}</span>
+                        <span class="name">${palaceData[p].name}</span>
+                        <span class="wuxing">${palaceData[p].wuxing}</span>
+                        <div class="palace-agents">${agentTags}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // 渲染外圆智能体
+        function renderCircleAgents() {
+            const agents = getAgentsInCell(currentTime, 0);
+            const container = document.getElementById('circle-agents');
+            
+            if (agents.length > 0) {
+                container.innerHTML = agents.map(a => `<span class="agent-tag">${a.name}</span>`).join('');
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        // 渲染智能体列表
+        function renderAgentList() {
+            const agents = getAgentsInCell(currentTime, currentPalace);
+            const container = document.getElementById('agent-list');
+            
+            if (agents.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-size: 12px; text-align: center;">暂无智能体</p>';
+                return;
+            }
+            
+            container.innerHTML = agents.map((agent, index) => `
+                <div class="agent-item" onclick="editAgent(${index})">
+                    <div class="agent-name">${agent.name}</div>
+                    <div class="agent-role">${agent.role || '未设置角色'}</div>
+                    <div class="agent-actions">
+                        <button class="agent-btn" onclick="event.stopPropagation(); editAgent(${index})">编辑</button>
+                        <button class="agent-btn delete" onclick="event.stopPropagation(); deleteAgent(${index})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 获取某时间层所有智能体
+        function getAgentsInTime(time) {
+            let agents = [];
+            for (let p = 0; p <= 9; p++) {
+                const key = `${time}-${p}`;
+                if (agentsData[key]) {
+                    agents = agents.concat(agentsData[key]);
+                }
+            }
+            return agents;
+        }
+
+        // 获取某格子所有智能体
+        function getAgentsInCell(time, palace) {
+            const key = `${time}-${palace}`;
+            return agentsData[key] || [];
+        }
+
+        // 选择时间层
+        function selectTime(time) {
+            currentTime = time;
+            currentPalace = 0; // 重置到外圆
+            updateDisplay();
+        }
+
+        // 选择宫位
+        function selectPalace(palace) {
+            currentPalace = palace;
+            updateDisplay();
+        }
+
+        // 更新显示
+        function updateDisplay() {
+            // 更新时间轴选中状态
+            document.querySelectorAll('.timeline-item').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.time) === currentTime);
+            });
+            
+            // 更新宫位选中状态
+            document.querySelectorAll('.palace').forEach(el => {
+                el.classList.toggle('selected', parseInt(el.dataset.palace) === currentPalace);
+            });
+            
+            // 更新外圆选中状态
+            document.getElementById('circle-0').classList.toggle('selected', currentPalace === 0);
+            
+            // 更新信息显示
+            document.getElementById('info-time').textContent = `${currentTime}·${timeNames[currentTime]}`;
+            document.getElementById('info-palace').textContent = currentPalace === 0 ? '外圆·天' : `${currentPalace}·${palaceData[currentPalace].name}`;
+            document.getElementById('cell-info').textContent = `[${currentTime},${currentPalace}]`;
+            
+            // 更新智能体列表
+            renderAgentList();
+            renderCircleAgents();
+            
+            // 更新总数
+            updateTotalCount();
+        }
+
+        // 更新总数
+        function updateTotalCount() {
+            let total = 0;
+            Object.values(agentsData).forEach(agents => {
+                total += agents.length;
+            });
+            document.getElementById('total-agents').textContent = total;
+        }
+
+        // 显示添加智能体模态框
+        function showAddAgentModal() {
+            editingAgentId = null;
+            document.getElementById('modal-title').textContent = '添加智能体';
+            clearModalInputs();
+            document.getElementById('agent-modal').classList.add('show');
+        }
+
+        // 编辑智能体
+        function editAgent(index) {
+            const agents = getAgentsInCell(currentTime, currentPalace);
+            const agent = agents[index];
+            editingAgentId = index;
+            
+            document.getElementById('modal-title').textContent = '编辑智能体';
+            document.getElementById('agent-name').value = agent.name || '';
+            document.getElementById('agent-role').value = agent.role || '';
+            document.getElementById('agent-goal').value = agent.goal || '';
+            document.getElementById('agent-skills').value = (agent.skills || []).join(', ');
+            document.getElementById('agent-tools').value = (agent.tools || []).join(', ');
+            document.getElementById('agent-knowledge').value = agent.knowledge || '';
+            document.getElementById('agent-input').value = agent.input || '';
+            document.getElementById('agent-output').value = agent.output || '';
+            document.getElementById('agent-prompt').value = agent.prompt || '';
+            
+            // 设置模型
+            document.querySelectorAll('.tag-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.model === agent.model);
+            });
+            document.getElementById('agent-model').value = agent.model || '';
+            
+            document.getElementById('agent-modal').classList.add('show');
+        }
+
+        // 选择模型
+        function selectModel(el) {
+            document.querySelectorAll('.tag-option').forEach(opt => opt.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('agent-model').value = el.dataset.model;
+        }
+
+        // 清空模态框输入
+        function clearModalInputs() {
+            document.getElementById('agent-name').value = '';
+            document.getElementById('agent-role').value = '';
+            document.getElementById('agent-goal').value = '';
+            document.getElementById('agent-skills').value = '';
+            document.getElementById('agent-tools').value = '';
+            document.getElementById('agent-knowledge').value = '';
+            document.getElementById('agent-input').value = '';
+            document.getElementById('agent-output').value = '';
+            document.getElementById('agent-prompt').value = '';
+            document.querySelectorAll('.tag-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById('agent-model').value = '';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('agent-modal').classList.remove('show');
+        }
+
+        // 保存智能体
+        function saveAgent() {
+            const name = document.getElementById('agent-name').value.trim();
+            if (!name) {
+                alert('请输入智能体名称');
+                return;
+            }
+            
+            const agent = {
+                name: name,
+                role: document.getElementById('agent-role').value.trim(),
+                goal: document.getElementById('agent-goal').value.trim(),
+                skills: document.getElementById('agent-skills').value.split(',').map(s => s.trim()).filter(s => s),
+                tools: document.getElementById('agent-tools').value.split(',').map(s => s.trim()).filter(s => s),
+                knowledge: document.getElementById('agent-knowledge').value.trim(),
+                model: document.getElementById('agent-model').value,
+                input: document.getElementById('agent-input').value.trim(),
+                output: document.getElementById('agent-output').value.trim(),
+                prompt: document.getElementById('agent-prompt').value.trim(),
+                createdAt: new Date().toISOString()
+            };
+            
+            const key = `${currentTime}-${currentPalace}`;
+            if (!agentsData[key]) {
+                agentsData[key] = [];
+            }
+            
+            if (editingAgentId !== null) {
+                agentsData[key][editingAgentId] = agent;
+            } else {
+                agentsData[key].push(agent);
+            }
+            
+            saveData();
+            closeModal();
+            renderTimeline();
+            renderPalaces();
+            renderAgentList();
+            renderCircleAgents();
+            updateTotalCount();
+        }
+
+        // 删除智能体
+        function deleteAgent(index) {
+            if (!confirm('确定删除这个智能体？')) return;
+            
+            const key = `${currentTime}-${currentPalace}`;
+            agentsData[key].splice(index, 1);
+            
+            if (agentsData[key].length === 0) {
+                delete agentsData[key];
+            }
+            
+            saveData();
+            renderTimeline();
+            renderPalaces();
+            renderAgentList();
+            renderCircleAgents();
+            updateTotalCount();
+        }
+
+        // 保存数据到localStorage
+        function saveData() {
+            localStorage.setItem('tianyuan-agents', JSON.stringify(agentsData));
+        }
+
+        // 从localStorage加载数据
+        function loadData() {
+            const saved = localStorage.getItem('tianyuan-agents');
+            if (saved) {
+                agentsData = JSON.parse(saved);
+            }
+        }
+
+        // 保存所有数据
+        function saveAllData() {
+            saveData();
+            alert('保存成功！');
+        }
+
+        // 导出JSON
+        function exportJSON() {
+            const data = JSON.stringify(agentsData, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `身国智能体_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 导入JSON
+        function importJSON() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        agentsData = JSON.parse(event.target.result);
+                        saveData();
+                        renderTimeline();
+                        renderPalaces();
+                        renderAgentList();
+                        renderCircleAgents();
+                        updateTotalCount();
+                        alert('导入成功！');
+                    } catch (err) {
+                        alert('导入失败：无效的JSON文件');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // 清空所有
+        function clearAll() {
+            if (!confirm('确定清空所有智能体数据？此操作不可恢复！')) return;
+            agentsData = {};
+            localStorage.removeItem('tianyuan-agents');
+            renderTimeline();
+            renderPalaces();
+            renderAgentList();
+            renderCircleAgents();
+            updateTotalCount();
+            alert('已清空');
+        }
+
+        // 启动
+        init();
+    </script>
+</body>
+</html>
