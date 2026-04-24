@@ -2,7 +2,7 @@
 (function() {
     function checkPassword() {
         const input = document.getElementById('passwordInput').value;
-        if (input === '阿恒') {
+        if (input === 'aheng') {
             document.getElementById('loginContainer').classList.add('hidden');
             document.getElementById('privateContent').classList.add('visible');
             localStorage.setItem('tianyuan_auth', 'true');
