@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身国 · 页面编辑神器</title>
+    
+    <!-- GridStack.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10.0.0/dist/gridstack.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/gridstack@10.0.0/dist/gridstack-all.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'STSong', serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* ========== 布局结构 ========== */
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr 280px;
+            grid-template-rows: 50px 1fr 40px;
+            height: 100vh;
+        }
+        
+        /* ========== 顶部工具栏 ========== */
+        .toolbar {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(0, 0, 0, 0.8));
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            font-size: 18px;
+            color: #ffd700;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo-icon {
+            font-size: 22px;
+        }
+        
+        .toolbar-center {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .tool-btn {
+            padding: 6px 14px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 6px;
+            color: #ffd700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tool-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .tool-btn.primary {
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            color: #0a0a0a;
+            border: none;
+        }
+        
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-indicator {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+        
+        /* ========== 左侧组件面板 ========== */
+        .component-panel {
+            background: rgba(15, 15, 25, 0.95);
+            border-right: 1px solid rgba(255, 215, 0, 0.2);
+            overflow-y: auto;
+        }
+        
+        .panel-header {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            font-size: 13px;
+            color: #ffd700;
+            letter-spacing: 1px;
+        }
+        
+        .component-category {
+            padding: 10px;
+        }
+        
+        .category-title {
+            font-size: 11px;
+            color: #888;
+            padding: 8px 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            padding: 0 10px 10px;
+        }
+        
+        .component-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s;
+            user-select: none;
+        }
+        
+        .component-item:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: #ffd700;
+            transform: scale(1.02);
+        }
+        
+        .component-item:active {
+            cursor: grabbing;
+        }
+        
+        .component-item .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .component-item .name {
+            font-size: 10px;
+            color: #aaa;
+        }
+        
+        /* ========== 中间画布 ========== */
+        .canvas-area {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            overflow: auto;
+            position: relative;
+        }
+        
+        .canvas-header {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+            z-index: 100;
+        }
+        
+        .canvas-tab {
+            padding: 6px 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 6px 6px 0 0;
+            color: #888;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .canvas-tab.active {
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+        
+        .grid-stack {
+            background: transparent;
+            padding: 50px 20px 20px;
+            min-height: calc(100vh - 90px);
+        }
+        
+        .grid-stack-item {
+            background: rgba(15, 15, 25, 0.95);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+        
+        .grid-stack-item:hover {
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+        }
+        
+        .grid-stack-item.ui-draggable-dragging {
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.4);
+            z-index: 1000;
+        }
+        
+        .grid-stack-item-content {
+            padding: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .widget-header {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .widget-title {
+            font-size: 12px;
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .widget-actions {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .widget-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+            transition: all 0.2s;
+        }
+        
+        .widget-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+        }
+        
+        .widget-btn.delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        
+        .widget-body {
+            flex: 1;
+            padding: 12px;
+            overflow: auto;
+        }
+        
+        /* ========== 右侧属性面板 ========== */
+        .property-panel {
+            background: rgba(15, 15, 25, 0.95);
+            border-left: 1px solid rgba(255, 215, 0, 0.2);
+            overflow-y: auto;
+        }
+        
+        .property-section {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .property-section-title {
+            font-size: 11px;
+            color: #ffd700;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        
+        .property-row {
+            margin-bottom: 10px;
+        }
+        
+        .property-label {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .property-input {
+            width: 100%;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 11px;
+            outline: none;
+        }
+        
+        .property-input:focus {
+            border-color: #ffd700;
+        }
+        
+        .property-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 11px;
+            outline: none;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .property-textarea:focus {
+            border-color: #ffd700;
+        }
+        
+        .color-picker-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .color-picker {
+            width: 40px;
+            height: 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+        }
+        
+        .property-select {
+            width: 100%;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 11px;
+            outline: none;
+        }
+        
+        /* ========== 底部状态栏 ========== */
+        .statusbar {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.6);
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .statusbar-left, .statusbar-right {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .statusbar-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .statusbar-item .value {
+            color: #ffd700;
+        }
+        
+        /* ========== 组件内容样式 ========== */
+        .widget-text {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .widget-title-large {
+            font-size: 24px;
+            color: #ffd700;
+            letter-spacing: 2px;
+        }
+        
+        .widget-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .widget-stat {
+            text-align: center;
+        }
+        
+        .widget-stat .value {
+            font-size: 32px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .widget-stat .label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .widget-list {
+            list-style: none;
+        }
+        
+        .widget-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+        }
+        
+        .widget-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .widget-button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: 8px;
+            color: #0a0a0a;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .widget-button:hover {
+            transform: scale(1.02);
+        }
+        
+        /* ========== 五神君特殊样式 ========== */
+        .god-card {
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .god-card .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .god-card .name {
+            font-size: 14px;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        .god-card .title {
+            font-size: 11px;
+            color: #888;
+        }
+        
+        .god-card.fire { background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), transparent); }
+        .god-card.wood { background: linear-gradient(135deg, rgba(22, 163, 74, 0.2), transparent); }
+        .god-card.earth { background: linear-gradient(135deg, rgba(202, 138, 4, 0.2), transparent); }
+        .god-card.metal { background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), transparent); }
+        .god-card.water { background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), transparent); }
+        
+        /* ========== 滚动条 ========== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 3px;
+        }
+        
+        /* ========== 空状态 ========== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .empty-state .text {
+            font-size: 13px;
+        }
+        
+        /* ========== 模态框 ========== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: rgba(15, 15, 25, 0.98);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 16px;
+            color: #ffd700;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .modal-close:hover {
+            color: #ffd700;
+        }
+        
+        .code-output {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            color: #4ade80;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .copy-btn {
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: 8px;
+            color: #0a0a0a;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部工具栏 -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="logo">
+                    <span class="logo-icon">🏛️</span>
+                    <span>身国 · 页面编辑神器</span>
+                </div>
+            </div>
+            <div class="toolbar-center">
+                <button class="tool-btn" onclick="undo()">↩️ 撤销</button>
+                <button class="tool-btn" onclick="redo()">↪️ 重做</button>
+                <button class="tool-btn" onclick="clearCanvas()">🗑️ 清空</button>
+                <button class="tool-btn" onclick="preview()">👁️ 预览</button>
+                <button class="tool-btn" onclick="exportHTML()">📤 导出</button>
+                <button class="tool-btn primary" onclick="saveLayout()">💾 保存</button>
+            </div>
+            <div class="toolbar-right">
+                <span class="status-indicator" id="statusIndicator">就绪</span>
+            </div>
+        </div>
+        
+        <!-- 左侧组件面板 -->
+        <div class="component-panel">
+            <div class="panel-header">📦 组件库</div>
+            
+            <!-- 基础组件 -->
+            <div class="component-category">
+                <div class="category-title">基础组件</div>
+                <div class="component-grid">
+                    <div class="component-item" draggable="true" data-widget="title">
+                        <div class="icon">📝</div>
+                        <div class="name">标题</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="text">
+                        <div class="icon">📄</div>
+                        <div class="name">文本</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="image">
+                        <div class="icon">🖼️</div>
+                        <div class="name">图片</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="button">
+                        <div class="icon">🔘</div>
+                        <div class="name">按钮</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="stat">
+                        <div class="icon">📊</div>
+                        <div class="name">数据卡</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="list">
+                        <div class="icon">📋</div>
+                        <div class="name">列表</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 五神君组件 -->
+            <div class="component-category">
+                <div class="category-title">五神君</div>
+                <div class="component-grid">
+                    <div class="component-item" draggable="true" data-widget="god-fire">
+                        <div class="icon">❤️‍🔥</div>
+                        <div class="name">丹元·心</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="god-wood">
+                        <div class="icon">🐉</div>
+                        <div class="name">龙烟·肝</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="god-earth">
+                        <div class="icon">🏛️</div>
+                        <div class="name">常在·脾</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="god-metal">
+                        <div class="icon">🦅</div>
+                        <div class="name">皓华·肺</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="god-water">
+                        <div class="icon">🐢</div>
+                        <div class="name">玄冥·肾</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="gods-grid">
+                        <div class="icon">⭐</div>
+                        <div class="name">九宫图</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 身国组件 -->
+            <div class="component-category">
+                <div class="category-title">身国系统</div>
+                <div class="component-grid">
+                    <div class="component-item" draggable="true" data-widget="treasure">
+                        <div class="icon">💎</div>
+                        <div class="name">三宝</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="dialog">
+                        <div class="icon">💬</div>
+                        <div class="name">对话</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="chart">
+                        <div class="icon">📈</div>
+                        <div class="name">图表</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="timeline">
+                        <div class="icon">⏰</div>
+                        <div class="name">时间线</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 布局组件 -->
+            <div class="component-category">
+                <div class="category-title">布局</div>
+                <div class="component-grid">
+                    <div class="component-item" draggable="true" data-widget="container">
+                        <div class="icon">📦</div>
+                        <div class="name">容器</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="divider">
+                        <div class="icon">➖</div>
+                        <div class="name">分割线</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="spacer">
+                        <div class="icon">⬜</div>
+                        <div class="name">空白</div>
+                    </div>
+                    <div class="component-item" draggable="true" data-widget="tabs">
+                        <div class="icon">📑</div>
+                        <div class="name">标签页</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 中间画布 -->
+        <div class="canvas-area">
+            <div class="canvas-header">
+                <div class="canvas-tab active">编辑</div>
+                <div class="canvas-tab" onclick="preview()">预览</div>
+            </div>
+            <div class="grid-stack" id="canvas"></div>
+        </div>
+        
+        <!-- 右侧属性面板 -->
+        <div class="property-panel">
+            <div class="panel-header">⚙️ 属性面板</div>
+            
+            <div id="propertyContent">
+                <div class="empty-state">
+                    <div class="icon">👆</div>
+                    <div class="text">选择一个组件<br>编辑其属性</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部状态栏 -->
+        <div class="statusbar">
+            <div class="statusbar-left">
+                <div class="statusbar-item">
+                    组件: <span class="value" id="widgetCount">0</span>
+                </div>
+                <div class="statusbar-item">
+                    列: <span class="value">12</span>
+                </div>
+                <div class="statusbar-item">
+                    行高: <span class="value">70px</span>
+                </div>
+            </div>
+            <div class="statusbar-right">
+                <div class="statusbar-item">
+                    身国 · 内景世界 · 元灵哈希 0xADY0X9-C0NST4NT
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导出模态框 -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">📤 导出HTML</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="code-output" id="codeOutput"></div>
+            <button class="copy-btn" onclick="copyCode()">📋 复制代码</button>
+        </div>
+    </div>
+    
+    <script>
+        // ========== 全局变量 ==========
+        let grid = null;
+        let selectedWidget = null;
+        let widgetCounter = 0;
+        let history = [];
+        let historyIndex = -1;
+        
+        // ========== 组件模板 ==========
+        const widgetTemplates = {
+            'title': {
+                w: 6, h: 2,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">📝 标题</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-title-large" contenteditable="true">身国 · 内景世界</div>
+                    </div>
+                `
+            },
+            'text': {
+                w: 4, h: 3,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">📄 文本</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-text" contenteditable="true">在此编辑文本内容...</div>
+                    </div>
+                `
+            },
+            'image': {
+                w: 4, h: 3,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">🖼️ 图片</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body" style="display:flex;align-items:center;justify-content:center;">
+                        <div style="text-align:center;color:#666;">
+                            <div style="font-size:40px;">🖼️</div>
+                            <div style="font-size:11px;margin-top:5px;">点击上传图片</div>
+                        </div>
+                    </div>
+                `
+            },
+            'button': {
+                w: 3, h: 1,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">🔘 按钮</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body" style="display:flex;align-items:center;">
+                        <button class="widget-button">点击按钮</button>
+                    </div>
+                `
+            },
+            'stat': {
+                w: 2, h: 2,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">📊 数据</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-stat">
+                            <div class="value" contenteditable="true">88</div>
+                            <div class="label" contenteditable="true">精气神</div>
+                        </div>
+                    </div>
+                `
+            },
+            'list': {
+                w: 3, h: 3,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">📋 列表</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <ul class="widget-list">
+                            <li contenteditable="true">第一项</li>
+                            <li contenteditable="true">第二项</li>
+                            <li contenteditable="true">第三项</li>
+                        </ul>
+                    </div>
+                `
+            },
+            'god-fire': {
+                w: 2, h: 2,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">❤️‍🔥 丹元</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div class="god-card fire">
+                            <div class="icon">❤️‍🔥</div>
+                            <div class="name">丹元神君</div>
+                            <div class="title">心 · 灵明之主</div>
+                        </div>
+                    </div>
+                `
+            },
+            'god-wood': {
+                w: 2, h: 2,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">🐉 龙烟</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div class="god-card wood">
+                            <div class="icon">🐉</div>
+                            <div class="name">龙烟神君</div>
+                            <div class="title">肝 · 谋略之主</div>
+                        </div>
+                    </div>
+                `
+            },
+            'god-earth': {
+                w: 2, h: 2,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">🏛️ 常在</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div class="god-card earth">
+                            <div class="icon">🏛️</div>
+                            <div class="name">常在神君</div>
+                            <div class="title">脾 · 运化之主</div>
+                        </div>
+                    </div>
+                `
+            },
+            'god-metal': {
+                w: 2, h: 2,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">🦅 皓华</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div class="god-card metal">
+                            <div class="icon">🦅</div>
+                            <div class="name">皓华神君</div>
+                            <div class="title">肺 · 治节之主</div>
+                        </div>
+                    </div>
+                `
+            },
+            'god-water': {
+                w: 2, h: 2,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">🐢 玄冥</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div class="god-card water">
+                            <div class="icon">🐢</div>
+                            <div class="name">玄冥神君</div>
+                            <div class="title">肾 · 作强之主</div>
+                        </div>
+                    </div>
+                `
+            },
+            'gods-grid': {
+                w: 6, h: 4,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">⭐ 九宫图</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;text-align:center;">
+                            <div style="padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;">🌬️<br><small>巽</small></div>
+                            <div style="padding:10px;background:rgba(220,38,38,0.2);border-radius:6px;">❤️‍🔥<br><small>丹元</small></div>
+                            <div style="padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;">🏔️<br><small>坤</small></div>
+                            <div style="padding:10px;background:rgba(22,163,74,0.2);border-radius:6px;">🐉<br><small>龙烟</small></div>
+                            <div style="padding:10px;background:rgba(202,138,4,0.2);border-radius:6px;">🏛️<br><small>常在</small></div>
+                            <div style="padding:10px;background:rgba(217,119,6,0.2);border-radius:6px;">🦅<br><small>皓华</small></div>
+                            <div style="padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;">🏔️<br><small>艮</small></div>
+                            <div style="padding:10px;background:rgba(37,99,235,0.2);border-radius:6px;">🐢<br><small>玄冥</small></div>
+                            <div style="padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;">☰<br><small>乾</small></div>
+                        </div>
+                    </div>
+                `
+            },
+            'treasure': {
+                w: 3, h: 3,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">💎 三宝</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <div style="text-align:center;">
+                                <div style="font-size:11px;color:#888;">精 · 归藏</div>
+                                <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:5px 0;">
+                                    <div style="width:75%;height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:2px;"></div>
+                                </div>
+                                <div style="font-size:10px;color:#ffd700;">75/100</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:11px;color:#888;">气 · 运化</div>
+                                <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:5px 0;">
+                                    <div style="width:60%;height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:2px;"></div>
+                                </div>
+                                <div style="font-size:10px;color:#ffd700;">60/100</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:11px;color:#888;">神 · 灵明</div>
+                                <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:5px 0;">
+                                    <div style="width:85%;height:100%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:2px;"></div>
+                                </div>
+                                <div style="font-size:10px;color:#ffd700;">85/100</div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'dialog': {
+                w: 4, h: 4,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">💬 对话</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body" style="display:flex;flex-direction:column;height:100%;">
+                        <div style="flex:1;overflow-y:auto;margin-bottom:8px;">
+                            <div style="margin-bottom:8px;">
+                                <div style="display:inline-block;padding:6px 10px;background:rgba(255,215,0,0.1);border-radius:8px;font-size:11px;">君上安好，臣乃常在神君...</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:5px;">
+                            <input type="text" placeholder="输入消息..." style="flex:1;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,215,0,0.2);border-radius:12px;color:#e0e0e0;font-size:11px;outline:none;">
+                            <button style="padding:6px 12px;background:linear-gradient(135deg,#ffd700,#ff6b6b);border:none;border-radius:12px;color:#0a0a0a;font-size:10px;cursor:pointer;">发送</button>
+                        </div>
+                    </div>
+                `
+            },
+            'chart': {
+                w: 4, h: 3,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">📈 图表</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body" style="display:flex;align-items:flex-end;justify-content:space-around;height:100%;padding-bottom:20px;">
+                        <div style="width:20px;height:40%;background:linear-gradient(to top,#ffd700,#ff6b6b);border-radius:4px;"></div>
+                        <div style="width:20px;height:60%;background:linear-gradient(to top,#ffd700,#ff6b6b);border-radius:4px;"></div>
+                        <div style="width:20px;height:80%;background:linear-gradient(to top,#ffd700,#ff6b6b);border-radius:4px;"></div>
+                        <div style="width:20px;height:50%;background:linear-gradient(to top,#ffd700,#ff6b6b);border-radius:4px;"></div>
+                        <div style="width:20px;height:70%;background:linear-gradient(to top,#ffd700,#ff6b6b);border-radius:4px;"></div>
+                    </div>
+                `
+            },
+            'timeline': {
+                w: 4, h: 3,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">⏰ 时间线</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div style="position:relative;padding-left:20px;">
+                            <div style="position:absolute;left:5px;top:0;bottom:0;width:2px;background:rgba(255,215,0,0.3);"></div>
+                            <div style="margin-bottom:15px;position:relative;">
+                                <div style="position:absolute;left:-19px;width:12px;height:12px;background:#ffd700;border-radius:50%;"></div>
+                                <div style="font-size:11px;color:#ffd700;">辰时</div>
+                                <div style="font-size:10px;color:#888;">静坐修炼</div>
+                            </div>
+                            <div style="margin-bottom:15px;position:relative;">
+                                <div style="position:absolute;left:-19px;width:12px;height:12px;background:#ffd700;border-radius:50%;"></div>
+                                <div style="font-size:11px;color:#ffd700;">午时</div>
+                                <div style="font-size:10px;color:#888;">午休养神</div>
+                            </div>
+                            <div style="position:relative;">
+                                <div style="position:absolute;left:-19px;width:12px;height:12px;background:#ffd700;border-radius:50%;"></div>
+                                <div style="font-size:11px;color:#ffd700;">酉时</div>
+                                <div style="font-size:10px;color:#888;">吐纳调息</div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'container': {
+                w: 6, h: 3,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">📦 容器</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body" style="min-height:100px;border:2px dashed rgba(255,215,0,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#666;font-size:11px;">
+                        拖拽组件到此处
+                    </div>
+                `
+            },
+            'divider': {
+                w: 12, h: 1,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">➖ 分割线</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body" style="display:flex;align-items:center;">
+                        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.5),transparent);"></div>
+                    </div>
+                `
+            },
+            'spacer': {
+                w: 2, h: 2,
+                content: `
+                    <div class="widget-header" style="opacity:0.5;">
+                        <div class="widget-title">⬜ 空白</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body"></div>
+                `
+            },
+            'tabs': {
+                w: 6, h: 3,
+                content: `
+                    <div class="widget-header">
+                        <div class="widget-title">📑 标签页</div>
+                        <div class="widget-actions">
+                            <button class="widget-btn" onclick="editWidget(this)">✎</button>
+                            <button class="widget-btn delete" onclick="removeWidget(this)">×</button>
+                        </div>
+                    </div>
+                    <div class="widget-body">
+                        <div style="display:flex;gap:5px;margin-bottom:10px;">
+                            <div style="padding:5px 15px;background:rgba(255,215,0,0.2);border-radius:6px 6px 0 0;font-size:11px;color:#ffd700;cursor:pointer;">标签1</div>
+                            <div style="padding:5px 15px;background:rgba(255,255,255,0.05);border-radius:6px 6px 0 0;font-size:11px;color:#888;cursor:pointer;">标签2</div>
+                            <div style="padding:5px 15px;background:rgba(255,255,255,0.05);border-radius:6px 6px 0 0;font-size:11px;color:#888;cursor:pointer;">标签3</div>
+                        </div>
+                        <div style="padding:10px;background:rgba(0,0,0,0.2);border-radius:6px;font-size:11px;" contenteditable="true">
+                            标签页内容区域...
+                        </div>
+                    </div>
+                `
+            }
+        };
+        
+        // ========== 初始化 ==========
+        function init() {
+            // 初始化GridStack
+            grid = GridStack.init({
+                column: 12,
+                cellHeight: 70,
+                margin: 10,
+                draggable: {
+                    handle: '.widget-header'
+                },
+                resizable: {
+                    handles: 'e, se, s, sw, w'
+                },
+                acceptWidgets: true,
+                float: true
+            }, '#canvas');
+            
+            // 监听事件
+            grid.on('added', onWidgetAdded);
+            grid.on('removed', onWidgetRemoved);
+            grid.on('change', onWidgetChanged);
+            
+            // 组件拖拽
+            setupComponentDrag();
+            
+            // 加载保存的布局
+            loadLayout();
+            
+            // 更新状态
+            updateStatus();
+        }
+        
+        // ========== 组件拖拽 ==========
+        function setupComponentDrag() {
+            document.querySelectorAll('.component-item').forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    const widgetType = item.dataset.widget;
+                    e.dataTransfer.setData('text/plain', widgetType);
+                });
+            });
+            
+            // 画布接收拖拽
+            const canvas = document.getElementById('canvas');
+            canvas.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            
+            canvas.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const widgetType = e.dataTransfer.getData('text/plain');
+                if (widgetType && widgetTemplates[widgetType]) {
+                    addWidget(widgetType);
+                }
+            });
+        }
+        
+        // ========== 添加组件 ==========
+        function addWidget(type) {
+            const template = widgetTemplates[type];
+            if (!template) return;
+            
+            widgetCounter++;
+            const widget = {
+                id: 'widget-' + widgetCounter,
+                x: 0,
+                y: 0,
+                w: template.w,
+                h: template.h,
+                content: template.content
+            };
+            
+            grid.addWidget(widget);
+            saveHistory();
+            updateStatus();
+            showNotification('组件已添加');
+        }
+        
+        // ========== 移除组件 ==========
+        function removeWidget(btn) {
+            const item = btn.closest('.grid-stack-item');
+            if (item) {
+                grid.removeWidget(item);
+                saveHistory();
+                updateStatus();
+                showNotification('组件已删除');
+            }
+        }
+        
+        // ========== 编辑组件 ==========
+        function editWidget(btn) {
+            const item = btn.closest('.grid-stack-item');
+            if (!item) return;
+            
+            selectedWidget = item;
+            
+            // 显示属性面板
+            const propertyContent = document.getElementById('propertyContent');
+            propertyContent.innerHTML = `
+                <div class="property-section">
+                    <div class="property-section-title">📝 内容</div>
+                    <div class="property-row">
+                        <div class="property-label">标题</div>
+                        <input type="text" class="property-input" id="propTitle" 
+                               value="${item.querySelector('.widget-title')?.textContent || ''}"
+                               onchange="updateWidgetTitle(this.value)">
+                    </div>
+                </div>
+                <div class="property-section">
+                    <div class="property-section-title">📐 尺寸</div>
+                    <div class="property-row">
+                        <div class="property-label">宽度 (列)</div>
+                        <input type="number" class="property-input" id="propWidth" min="1" max="12"
+                               value="${grid.engine.nodes.find(n => n.el === item)?.w || 1}"
+                               onchange="updateWidgetSize()">
+                    </div>
+                    <div class="property-row">
+                        <div class="property-label">高度 (行)</div>
+                        <input type="number" class="property-input" id="propHeight" min="1" max="20"
+                               value="${grid.engine.nodes.find(n => n.el === item)?.h || 1}"
+                               onchange="updateWidgetSize()">
+                    </div>
+                </div>
+                <div class="property-section">
+                    <div class="property-section-title">🎨 样式</div>
+                    <div class="property-row">
+                        <div class="property-label">背景色</div>
+                        <div class="color-picker-row">
+                            <input type="color" class="color-picker" id="propBgColor" value="#0f0f19"
+                                   onchange="updateWidgetStyle()">
+                            <input type="text" class="property-input" id="propBgColorText" value="#0f0f19"
+                                   onchange="document.getElementById('propBgColor').value=this.value;updateWidgetStyle()">
+                        </div>
+                    </div>
+                    <div class="property-row">
+                        <div class="property-label">边框圆角</div>
+                        <input type="range" class="property-input" id="propRadius" min="0" max="24" value="12"
+                               onchange="updateWidgetStyle()" style="padding:0;">
+                    </div>
+                </div>
+                <div class="property-section">
+                    <div class="property-section-title">⚙️ 操作</div>
+                    <button class="tool-btn" style="width:100%;" onclick="duplicateWidget()">📋 复制</button>
+                    <button class="tool-btn" style="width:100%;margin-top:8px;background:rgba(239,68,68,0.2);color:#ef4444;" onclick="removeWidget(document.querySelector('.grid-stack-item'))">🗑️ 删除</button>
+                </div>
+            `;
+        }
+        
+        function updateWidgetTitle(value) {
+            if (selectedWidget) {
+                const title = selectedWidget.querySelector('.widget-title');
+                if (title) {
+                    const icon = title.querySelector('.icon') || '';
+                    title.innerHTML = value;
+                }
+            }
+        }
+        
+        function updateWidgetSize() {
+            if (selectedWidget) {
+                const w = parseInt(document.getElementById('propWidth').value);
+                const h = parseInt(document.getElementById('propHeight').value);
+                grid.update(selectedWidget, { w, h });
+            }
+        }
+        
+        function updateWidgetStyle() {
+            if (selectedWidget) {
+                const bgColor = document.getElementById('propBgColor').value;
+                const radius = document.getElementById('propRadius').value;
+                selectedWidget.style.background = bgColor;
+                selectedWidget.style.borderRadius = radius + 'px';
+            }
+        }
+        
+        function duplicateWidget() {
+            if (selectedWidget) {
+                const node = grid.engine.nodes.find(n => n.el === selectedWidget);
+                if (node) {
+                    widgetCounter++;
+                    grid.addWidget({
+                        x: node.x + 1,
+                        y: node.y + 1,
+                        w: node.w,
+                        h: node.h,
+                        content: selectedWidget.querySelector('.grid-stack-item-content')?.innerHTML || ''
+                    });
+                    showNotification('组件已复制');
+                }
+            }
+        }
+        
+        // ========== 事件处理 ==========
+        function onWidgetAdded(event, items) {
+            updateStatus();
+        }
+        
+        function onWidgetRemoved(event, items) {
+            updateStatus();
+        }
+        
+        function onWidgetChanged(event, items) {
+            saveHistory();
+        }
+        
+        // ========== 工具栏功能 ==========
+        function saveLayout() {
+            const layout = grid.save();
+            localStorage.setItem('shenguo-layout', JSON.stringify(layout));
+            showNotification('布局已保存');
+        }
+        
+        function loadLayout() {
+            const saved = localStorage.getItem('shenguo-layout');
+            if (saved) {
+                try {
+                    const layout = JSON.parse(saved);
+                    grid.load(layout);
+                } catch (e) {
+                    console.error('加载布局失败', e);
+                }
+            }
+        }
+        
+        function clearCanvas() {
+            if (confirm('确定要清空画布吗？')) {
+                grid.removeAll();
+                saveHistory();
+                updateStatus();
+                showNotification('画布已清空');
+            }
+        }
+        
+        function preview() {
+            const html = generateHTML();
+            const win = window.open('', '_blank');
+            win.document.write(html);
+            win.document.close();
+        }
+        
+        function exportHTML() {
+            const html = generateHTML();
+            document.getElementById('codeOutput').textContent = html;
+            document.getElementById('exportModal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('exportModal').classList.remove('active');
+        }
+        
+        function copyCode() {
+            const code = document.getElementById('codeOutput').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('代码已复制');
+            });
+        }
+        
+        function generateHTML() {
+            const widgets = [];
+            grid.engine.nodes.forEach(node => {
+                const content = node.el.querySelector('.grid-stack-item-content')?.innerHTML || '';
+                widgets.push({
+                    x: node.x,
+                    y: node.y,
+                    w: node.w,
+                    h: node.h,
+                    content: content
+                });
+            });
+            
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身国 · 导出页面</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10.0.0/dist/gridstack.min.css"/>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #0a0a0a; color: #e0e0e0; }
+        .grid-stack { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%); }
+        .grid-stack-item { background: rgba(15, 15, 25, 0.95); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; }
+        .grid-stack-item-content { padding: 15px; }
+    </style>
+</head>
+<body>
+    <div class="grid-stack">
+        ${widgets.map(w => `<div class="grid-stack-item" gs-x="${w.x}" gs-y="${w.y}" gs-w="${w.w}" gs-h="${w.h}"><div class="grid-stack-item-content">${w.content}</div></div>`).join('\n        ')}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/gridstack@10.0.0/dist/gridstack-all.js"><\/script>
+    <script>GridStack.init({ column: 12, cellHeight: 70, staticGrid: true });<\/script>
+</body>
+</html>`;
+        }
+        
+        // ========== 历史记录 ==========
+        function saveHistory() {
+            const state = grid.save();
+            history = history.slice(0, historyIndex + 1);
+            history.push(JSON.stringify(state));
+            historyIndex = history.length - 1;
+            
+            // 限制历史记录数量
+            if (history.length > 50) {
+                history.shift();
+                historyIndex--;
+            }
+        }
+        
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                const state = JSON.parse(history[historyIndex]);
+                grid.load(state);
+                showNotification('已撤销');
+            }
+        }
+        
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                const state = JSON.parse(history[historyIndex]);
+                grid.load(state);
+                showNotification('已重做');
+            }
+        }
+        
+        // ========== 状态更新 ==========
+        function updateStatus() {
+            document.getElementById('widgetCount').textContent = grid.engine.nodes.length;
+        }
+        
+        function showNotification(message) {
+            const indicator = document.getElementById('statusIndicator');
+            indicator.textContent = message;
+            indicator.style.background = 'rgba(255, 215, 0, 0.2)';
+            indicator.style.color = '#ffd700';
+            
+            setTimeout(() => {
+                indicator.textContent = '就绪';
+                indicator.style.background = 'rgba(74, 222, 128, 0.2)';
+                indicator.style.color = '#4ade80';
+            }, 2000);
+        }
+        
+        // ========== 启动 ==========
+        init();
+    </script>
+</body>
+</html>
