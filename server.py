@@ -38,8 +38,19 @@ CONFIG = {
 # ========== 认证 ==========
 def check_auth(req):
     """验证访问密钥"""
-    key = req.headers.get('X-Auth-Key') or req.json.get('authKey') if req.is_json else None
-    return key == CONFIG['secret_key']
+    # 优先检查header
+    key = req.headers.get('X-Auth-Key')
+    if key:
+        return key == CONFIG['secret_key']
+    # 如果有JSON body，检查authKey字段
+    if req.is_json:
+        try:
+            key = req.json.get('authKey')
+            if key:
+                return key == CONFIG['secret_key']
+        except:
+            pass
+    return False
 
 @app.before_request
 def auth_middleware():
